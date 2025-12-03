@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metro Bilbao - GTFS Viewer</title>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body data-theme="light">
+
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+        <div class="loader"></div>
+        <h2 id="loading-text">Cargando...</h2>
+    </div>
+
+    <!-- Map Container -->
+    <div id="map"></div>
+
+    <!-- UI Overlay -->
+    <div class="ui-overlay">
+        
+        <!-- Header / Controls -->
+        <div class="header-panel">
+            <div class="header-top">
+                <h1 data-i18n="title">Metro Bilbao</h1>
+                <div id="clock" style="font-family: monospace; font-size: 1.1rem;">00:00:00</div>
+            </div>
+            
+            <div class="controls">
+                <button id="btn-pause" data-i18n="pause">Pausar</button>
+                <button id="btn-theme" data-i18n="toggle_theme">Tema</button>
+                <div style="display: flex; border: 1px solid #ccc; border-radius: 4px; overflow: hidden;">
+                    <button id="btn-lang-es" style="border:none; border-radius:0;">ES</button>
+                    <button id="btn-lang-eu" style="border:none; border-radius:0;">EU</button>
+                </div>
+            </div>
+            
+            <div class="status-bar">
+                <span data-i18n="static_note">GTFS Estático</span>
+            </div>
+        </div>
+
+        <!-- Legend / Layers -->
+        <div class="legend-panel">
+            <div class="legend-item">
+                <span class="legend-icon icon-train"></span>
+                <span data-i18n="legend_train">Tren</span>
+            </div>
+            <div class="legend-item">
+                <span class="legend-icon icon-station"></span>
+                <span data-i18n="legend_station">Estación</span>
+            </div>
+            
+            <hr style="margin: 0.5rem 0; border: 0; border-top: 1px solid var(--border-color);">
+            
+            <div style="display: flex; gap: 0.5rem;">
+                <button id="btn-layer-std" data-i18n="layer_standard" style="flex:1; font-size: 0.8rem;">Mapa</button>
+                <button id="btn-layer-sat" data-i18n="layer_satellite" style="flex:1; font-size: 0.8rem;">Satélite</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    
+    <!-- App Logic -->
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>

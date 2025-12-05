@@ -128,6 +128,11 @@ class MapRenderer {
 
         // Update/Add trains
         trains.forEach(train => {
+            const route = this.routesById ? this.routesById.get(train.route_id) : null;
+            const routeShortName = route ? (route.short_name || route.long_name) : train.route_id;
+            // New tooltip format: L[X] | [destino]
+            const tooltipText = `L${routeShortName} | ${train.destination_name || '...'}`;
+            
             if (this.trainMarkers.has(train.trip_id)) {
                 // Move with smooth transition
                 const marker = this.trainMarkers.get(train.trip_id);
@@ -139,29 +144,25 @@ class MapRenderer {
                     }
                 }
                 marker.setLatLng([train.lat, train.lon]);
-                // Show only service number in tooltip if available, otherwise next stop
-                const tooltipText = train.service_number || train.next_stop_name || '...';
                 marker.setTooltipContent(tooltipText);
 
                 // Update stored train data
                 const oldTrainData = marker.trainData;
                 marker.trainData = train;
 
-                // Check if popup is open and next stop has changed
+                // Check if popup is open - always refresh to update station states
                 if (this.openTrainPopup &&
                     this.openTrainPopup.tripId === train.trip_id &&
                     marker.getPopup() &&
-                    marker.getPopup().isOpen() &&
-                    oldTrainData &&
-                    oldTrainData.next_stop_name !== train.next_stop_name) {
-                    // Refresh the popup with new data
-                    this.showTrainPopup(marker, train);
+                    marker.getPopup().isOpen()) {
+                    // Refresh the popup with new data (updates passed/current stations)
+                    this.showTrainPopup(marker, train, false); // false = don't scroll again
                 }
             } else {
                 // Create
                 let color = CONFIG.COLORS.secondary;
-                if (this.routesById && this.routesById.has(train.route_id)) {
-                    color = this.routesById.get(train.route_id).color;
+                if (route) {
+                    color = route.color;
                 }
 
                 const marker = L.circleMarker([train.lat, train.lon], {
@@ -170,11 +171,11 @@ class MapRenderer {
                     color: '#fff',
                     weight: 2,
                     fillOpacity: 1
-                }).bindTooltip(train.service_number || train.next_stop_name || '...');
+                }).bindTooltip(tooltipText);
 
                 // Add click handler for popup
                 marker.on('click', () => {
-                    this.showTrainPopup(marker, train);
+                    this.showTrainPopup(marker, marker.trainData, true); // true = scroll to current
                     this.openTrainPopup = { tripId: train.trip_id, marker: marker };
                 });
 
@@ -194,32 +195,90 @@ class MapRenderer {
         });
     }
 
-    showTrainPopup(marker, train) {
-        const t = i18n[this.language];
+    showTrainPopup(marker, train, scrollToCurrentStation = true) {
         const route = this.routesById.get(train.route_id);
-
-        // Use service number as title if available, otherwise use route name
-        const title = train.service_number || (route ? route.short_name || route.long_name : train.route_id);
-
+        const routeShortName = route ? (route.short_name || route.long_name) : train.route_id;
+        const routeColor = route ? route.color : CONFIG.COLORS.primary;
+        
+        // Title format: L[X] | [destino]
+        const title = `L${routeShortName} | ${train.destination_name || '...'}`;
+        
+        // Generate station list
+        let stationsList = '';
+        const currentTime = this.currentTime ? this.getSecondsFromMidnight(this.currentTime) : 0;
+        
+        if (train.all_stops && train.all_stops.length > 0) {
+            train.all_stops.forEach((stop, index) => {
+                const isPassed = stop.is_passed;
+                const isCurrent = stop.is_current;
+                
+                // Calculate minutes until arrival (only for future stations)
+                let timeInfo = '';
+                if (!isPassed && currentTime > 0) {
+                    const minutesUntil = Math.max(0, Math.round((stop.arrival - currentTime) / 60));
+                    const arrivalFormatted = this.formatTime(stop.arrival);
+                    timeInfo = `<span style="color: ${isCurrent ? '#333' : '#666'}; font-size: 0.85em;">${minutesUntil}' · ${arrivalFormatted}</span>`;
+                } else if (isPassed) {
+                    timeInfo = `<span style="color: #bbb; font-size: 0.85em;">${this.formatTime(stop.arrival)}</span>`;
+                }
+                
+                // Style based on station state
+                let stationStyle = '';
+                let textColor = '#333';
+                let fontWeight = 'normal';
+                let backgroundColor = 'transparent';
+                let borderLeft = '3px solid transparent';
+                
+                if (isPassed) {
+                    textColor = '#bbb';
+                    stationStyle = 'text-decoration: line-through;';
+                } else if (isCurrent) {
+                    fontWeight = 'bold';
+                    backgroundColor = `${routeColor}15`;
+                    borderLeft = `3px solid ${routeColor}`;
+                }
+                
+                const stationId = `train-stop-${train.trip_id}-${index}`;
+                
+                stationsList += `
+                    <div id="${stationId}" style="padding: 6px 8px; margin: 2px 0; display: flex; justify-content: space-between; align-items: center; background: ${backgroundColor}; border-left: ${borderLeft};">
+                        <span style="color: ${textColor}; font-weight: ${fontWeight}; ${stationStyle}">${stop.stop_name}</span>
+                        ${timeInfo}
+                    </div>
+                `;
+            });
+        }
+        
+        const popupId = `train-popup-${train.trip_id}`;
+        const scrollContainerId = `train-scroll-${train.trip_id}`;
+        
         const popupContent = `
-            <div style="font-family: sans-serif; min-width: 200px;">
-                <h3 style="margin: 0 0 10px 0; color: ${route ? route.color : CONFIG.COLORS.primary};">
+            <div id="${popupId}" style="font-family: sans-serif; min-width: 280px; max-width: 320px;">
+                <h3 style="margin: 0 0 10px 0; padding: 8px; background: ${routeColor}; color: white; border-radius: 4px 4px 0 0;">
                     ${title}
                 </h3>
-                <div style="margin-bottom: 8px;">
-                    <strong>${t.next_stop}:</strong><br/>
-                    ${train.next_stop_name}<br/>
-                    <span style="color: #666;">${t.arrival_time}: ${this.formatTime(train.next_stop_arrival)}</span>
-                </div>
-                <div>
-                    <strong>${t.destination}:</strong><br/>
-                    ${train.destination_name}<br/>
-                    <span style="color: #666;">${t.arrival_time}: ${this.formatTime(train.destination_arrival)}</span>
+                <div id="${scrollContainerId}" style="max-height: 250px; overflow-y: auto; padding: 4px;">
+                    ${stationsList}
                 </div>
             </div>
         `;
 
-        marker.bindPopup(popupContent).openPopup();
+        marker.bindPopup(popupContent, { maxWidth: 350 }).openPopup();
+        
+        // Auto-scroll to current station
+        if (scrollToCurrentStation && train.current_stop_index !== undefined) {
+            setTimeout(() => {
+                const currentStopElement = document.getElementById(`train-stop-${train.trip_id}-${train.current_stop_index}`);
+                const scrollContainer = document.getElementById(scrollContainerId);
+                if (currentStopElement && scrollContainer) {
+                    currentStopElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 100);
+        }
+    }
+
+    getSecondsFromMidnight(date) {
+        return date.getHours() * 3600 + date.getMinutes() * 60 + date.getSeconds();
     }
 
     showStationPopup(stopId, stopName) {
@@ -235,26 +294,19 @@ class MapRenderer {
         if (result.trains.length === 0) {
             trainsList = `<p style="color: #999; font-style: italic;">${t.no_trains}</p>`;
         } else {
-            trainsList = '<div style="max-height: 300px; overflow-y: auto;">';
+            // New format: L[X] | [destino] (XX:XX)                            XX'
+            // No scroll, max 10 trains (already limited by simulator)
+            trainsList = '<div>';
             result.trains.forEach(train => {
                 const route = this.routesById.get(train.route_id);
-                const routeName = route ? (route.short_name || route.long_name) : train.route_id;
+                const routeShortName = route ? (route.short_name || route.long_name) : train.route_id;
                 const routeColor = route ? route.color : CONFIG.COLORS.primary;
+                const arrivalFormatted = this.formatTime(train.arrival_time);
 
                 trainsList += `
-                    <div style="padding: 8px; margin: 4px 0; border-left: 3px solid ${routeColor}; background: #f9f9f9;">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <div>
-                                <strong style="color: ${routeColor};">${routeName}</strong>
-                                <br/>
-                                <span style="font-size: 0.9em;">${train.destination_name}</span>
-                            </div>
-                            <div style="text-align: right; margin-left: 10px;">
-                                <strong style="color: #333;">${train.minutes_until} ${t.minutes}</strong>
-                                <br/>
-                                <span style="font-size: 0.8em; color: #666;">${this.formatTime(train.arrival_time)}</span>
-                            </div>
-                        </div>
+                    <div style="padding: 6px 8px; margin: 3px 0; border-left: 3px solid ${routeColor}; background: #f9f9f9; display: flex; justify-content: space-between; align-items: center;">
+                        <span style="color: ${routeColor}; font-weight: 500;">L${routeShortName} | ${train.destination_name} <span style="color: #666; font-weight: normal;">(${arrivalFormatted})</span></span>
+                        <span style="font-weight: bold; color: #333; margin-left: 12px; white-space: nowrap;">${train.minutes_until}'</span>
                     </div>
                 `;
             });
@@ -264,7 +316,7 @@ class MapRenderer {
         const title = result.is_terminal ? t.departing_trains : t.upcoming_trains;
 
         const popupContent = `
-            <div style="font-family: sans-serif; min-width: 250px;">
+            <div style="font-family: sans-serif; min-width: 280px; max-width: 350px;">
                 <h3 style="margin: 0 0 10px 0; color: ${CONFIG.COLORS.primary};">
                     ${stopName}
                 </h3>

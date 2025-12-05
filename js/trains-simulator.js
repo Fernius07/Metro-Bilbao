@@ -87,10 +87,13 @@ class TrainSimulator {
                 const stopInfo = this.gtfs.stopsById.get(stopTimes[i].stop_id);
                 const lastStop = stopTimes[stopTimes.length - 1];
                 const destinationInfo = this.gtfs.stopsById.get(lastStop.stop_id);
+                
+                // Build all stops info for popup
+                const allStops = this.buildAllStopsInfo(trip, i + 1);
+                
                 return {
                     trip_id: trip.id,
                     route_id: trip.route_id,
-                    service_number: trip.service_number || '',
                     lat: stopInfo.lat,
                     lon: stopInfo.lon,
                     status: 'dwelling',
@@ -98,12 +101,23 @@ class TrainSimulator {
                     next_stop_name: this.gtfs.stopsById.get(stopTimes[i + 1].stop_id).name,
                     next_stop_arrival: stopTimes[i + 1].arrival,
                     destination_name: destinationInfo.name,
-                    destination_arrival: lastStop.arrival
+                    destination_arrival: lastStop.arrival,
+                    current_stop_index: i + 1,
+                    all_stops: allStops
                 };
             }
         }
 
         if (!prevStop || !nextStop) return null;
+
+        // Find current stop index (the one we're about to arrive at)
+        let currentStopIndex = 0;
+        for (let i = 0; i < stopTimes.length - 1; i++) {
+            if (time >= stopTimes[i].departure && time < stopTimes[i + 1].arrival) {
+                currentStopIndex = i + 1; // The next stop index
+                break;
+            }
+        }
 
         // Interpolate between stops
         // We need to map stop times to shape distances
@@ -118,14 +132,26 @@ class TrainSimulator {
             const p1 = this.gtfs.stopsById.get(prevStop.stop_id);
             const p2 = this.gtfs.stopsById.get(nextStop.stop_id);
             const progress = (time - prevStop.departure) / (nextStop.arrival - prevStop.departure);
+            
+            // Get destination info
+            const lastStop = trip.stop_times[trip.stop_times.length - 1];
+            const destinationInfo = this.gtfs.stopsById.get(lastStop.stop_id);
+            
+            // Build all stops info for popup
+            const allStops = this.buildAllStopsInfo(trip, currentStopIndex);
+            
             return {
                 trip_id: trip.id,
                 route_id: trip.route_id,
-                service_number: trip.service_number || '',
                 lat: p1.lat + (p2.lat - p1.lat) * progress,
                 lon: p1.lon + (p2.lon - p1.lon) * progress,
                 status: 'moving',
-                next_stop_name: this.gtfs.stopsById.get(nextStop.stop_id).name
+                next_stop_name: this.gtfs.stopsById.get(nextStop.stop_id).name,
+                next_stop_arrival: nextStop.arrival,
+                destination_name: destinationInfo.name,
+                destination_arrival: lastStop.arrival,
+                current_stop_index: currentStopIndex,
+                all_stops: allStops
             };
         }
 
@@ -173,29 +199,55 @@ class TrainSimulator {
             // Find point at currentDist in shape
             const position = this.getPointAtDistance(shape, currentDist, trip);
             if (position) {
-                position.service_number = trip.service_number || '';
+                // Build all stops info for popup
+                const allStops = this.buildAllStopsInfo(trip, currentStopIndex);
+                
                 position.next_stop_name = pB.name;
                 position.next_stop_arrival = nextStop.arrival;
                 position.destination_name = destinationInfo.name;
                 position.destination_arrival = lastStop.arrival;
+                position.current_stop_index = currentStopIndex;
+                position.all_stops = allStops;
                 return position;
             }
         }
+
+        // Build all stops info for popup
+        const allStops = this.buildAllStopsInfo(trip, currentStopIndex);
 
         // Fallback: Straight line (if no shape or projection failed)
         const progress = (time - prevStop.departure) / (nextStop.arrival - prevStop.departure);
         return {
             trip_id: trip.id,
             route_id: trip.route_id,
-            service_number: trip.service_number || '',
             lat: pA.lat + (pB.lat - pA.lat) * progress,
             lon: pA.lon + (pB.lon - pA.lon) * progress,
             status: 'moving',
             next_stop_name: pB.name,
             next_stop_arrival: nextStop.arrival,
             destination_name: destinationInfo.name,
-            destination_arrival: lastStop.arrival
+            destination_arrival: lastStop.arrival,
+            current_stop_index: currentStopIndex,
+            all_stops: allStops
         };
+    }
+
+    // Build all stops information for a trip with timing info
+    buildAllStopsInfo(trip, currentStopIndex) {
+        const allStops = [];
+        for (let i = 0; i < trip.stop_times.length; i++) {
+            const stopTime = trip.stop_times[i];
+            const stopInfo = this.gtfs.stopsById.get(stopTime.stop_id);
+            allStops.push({
+                stop_id: stopTime.stop_id,
+                stop_name: stopInfo ? stopInfo.name : 'Unknown',
+                arrival: stopTime.arrival,
+                departure: stopTime.departure,
+                is_passed: i < currentStopIndex,
+                is_current: i === currentStopIndex
+            });
+        }
+        return allStops;
     }
 
     getPointAtDistance(shape, targetDist, trip) {
@@ -210,7 +262,6 @@ class TrainSimulator {
                 return {
                     trip_id: trip.id,
                     route_id: trip.route_id,
-                    service_number: trip.service_number || '',
                     lat: points[i].lat + (points[i + 1].lat - points[i].lat) * fraction,
                     lon: points[i].lon + (points[i + 1].lon - points[i].lon) * fraction,
                     status: 'moving',
@@ -306,11 +357,12 @@ class TrainSimulator {
             }
         }
 
-        // Sort by arrival time
+        // Sort by arrival time and limit to 10 results
         upcomingTrains.sort((a, b) => a.arrival_time - b.arrival_time);
+        const limitedTrains = upcomingTrains.slice(0, 10);
 
         return {
-            trains: upcomingTrains,
+            trains: limitedTrains,
             is_terminal: isTerminal
         };
     }

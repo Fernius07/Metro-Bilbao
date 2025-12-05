@@ -10,7 +10,6 @@ class App {
         this.parser = new GTFSParser();
         this.renderer = null;
         this.simulator = null;
-        this.isRunning = true;
         this.lastUpdate = 0;
     }
 
@@ -53,11 +52,6 @@ class App {
     }
 
     loop(timestamp) {
-        if (!this.isRunning) {
-            requestAnimationFrame((t) => this.loop(t));
-            return;
-        }
-
         if (timestamp - this.lastUpdate > CONFIG.UPDATE_INTERVAL_MS) {
             const now = new Date();
             this.renderer.setCurrentTime(now); // Update current time for station queries
@@ -70,12 +64,6 @@ class App {
         }
 
         requestAnimationFrame((t) => this.loop(t));
-    }
-
-    togglePause() {
-        this.isRunning = !this.isRunning;
-        const btn = document.getElementById('btn-pause');
-        btn.textContent = this.isRunning ? i18n[this.lang].pause : i18n[this.lang].play;
     }
 
     toggleTheme() {
@@ -103,7 +91,6 @@ class App {
     }
 
     setupEventListeners() {
-        document.getElementById('btn-pause').addEventListener('click', () => this.togglePause());
         document.getElementById('btn-theme').addEventListener('click', () => this.toggleTheme());
         document.getElementById('btn-lang-es').addEventListener('click', () => this.setLanguage('es'));
         document.getElementById('btn-lang-eu').addEventListener('click', () => this.setLanguage('eu'));

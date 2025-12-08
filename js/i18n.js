@@ -1,6 +1,6 @@
 const i18n = {
     es: {
-        title: "Metro Bilbao - Tiempo Real (Simulado)",
+        title: "Metro Bilbao - Tiempo Real",
         loading: "Cargando sistema...",
         loading_step: "Procesando: ",
         ready: "Sistema listo",
@@ -23,7 +23,7 @@ const i18n = {
         arrival_time: "Hora de llegada",
         at_next_stop: "A próxima parada",
         at_destination: "A destino",
-        static_note: "Datos basados en horarios programados (GTFS estático). No refleja retrasos en tiempo real.",
+        static_note: "Denbora errealeko datuak Metro Bilbaoko APIaren bidez",
         upcoming_trains: "Próximos trenes",
         minutes: "minutos",
         departing_trains: "Trenes que salen",
@@ -31,7 +31,7 @@ const i18n = {
         arriving_in: "Llega en"
     },
     eu: {
-        title: "Bilboko Metroa - Denbora Erreala (Simulatua)",
+        title: "Bilboko Metroa - Denbora Erreala",
         loading: "Sistema kargatzen...",
         loading_step: "Prozesatzen: ",
         ready: "Sistema prest",
@@ -54,7 +54,7 @@ const i18n = {
         arrival_time: "Iritsiera ordua",
         at_next_stop: "Hurrengo geltokira",
         at_destination: "Helburura",
-        static_note: "Ordutegi programatuetan oinarritutako datuak (GTFS estatikoa). Ez du atzerapenik islatzen.",
+        static_note: "Denbora errealeko datuak Metro Bilbaoko APIaren bidez",
         upcoming_trains: "Hurrengo trenak",
         minutes: "minutu",
         departing_trains: "Irteten diren trenak",

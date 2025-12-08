@@ -33,6 +33,7 @@ class MapRenderer {
         this.simulator = null;
         this.currentTime = null;
         this.openTrainPopup = null;
+        this.openStationPopup = null;
     }
 
     setTheme(theme) {
@@ -207,12 +208,22 @@ class MapRenderer {
             const stopInfo = this.gtfsData.stopsById.get(stopTime.stop_id);
             const isPast = index < nextStopIndex;
             const isNext = index === nextStopIndex;
-            const minutesUntil = Math.round((stopTime.arrival - currentTime) / 60);
+            const delay = train.delay || 0;
+            const adjustedArrival = stopTime.arrival + delay;
+            const minutesUntil = Math.round((adjustedArrival - currentTime) / 60);
 
             const opacity = isPast ? '0.4' : '1';
             const fontWeight = isNext ? 'bold' : 'normal';
             const backgroundColor = isNext ? '#fff3e0' : 'transparent';
             const color = isPast ? '#999' : '#333';
+
+            let delayHtml = '';
+            if (!isPast && delay !== 0) {
+                const delayMin = Math.round(delay / 60);
+                const delayColor = delay > 0 ? '#f44336' : '#4caf50'; // Red if late, green if early
+                const sign = delay > 0 ? '+' : '';
+                delayHtml = `<span style="color: ${delayColor}; font-size: 0.8em; margin-left: 4px;">(${sign}${delayMin})</span>`;
+            }
 
             stationsList += `
                 <div class="station-item" data-index="${index}" style="
@@ -229,8 +240,8 @@ class MapRenderer {
                             ${stopInfo ? stopInfo.name : stopTime.stop_id}
                         </div>
                         <div style="text-align: right; font-size: 0.85em; margin-left: 10px;">
-                            ${!isPast ? `<span style="color: #ff6b00; font-weight: bold;">${minutesUntil}'</span><br/>` : ''}
-                            <span style="color: #666;">${this.formatTime(stopTime.arrival)}</span>
+                            ${!isPast ? `<span style="color: #ff6b00; font-weight: bold;">${minutesUntil}'</span>${delayHtml}<br/>` : ''}
+                            <span style="color: #666;">${this.formatTime(adjustedArrival)}</span>
                         </div>
                     </div>
                 </div>
@@ -266,6 +277,7 @@ class MapRenderer {
             return;
         }
 
+        this.openStationPopup = { stopId, stopName };
         const result = this.simulator.getUpcomingTrainsForStation(stopId, this.currentTime, 45);
 
         let trainsList = '';
@@ -278,16 +290,24 @@ class MapRenderer {
             trainsToShow.forEach(train => {
                 const lineNumber = this.getLineNumber(train.destination_name);
                 const route = this.routesById.get(train.route_id);
+                const lengthStr = train.length === 5 ? ' (5)' : '';
+
+                let delayHtml = '';
+                if (train.delay_msg) {
+                    const isLate = train.delay_msg.includes('+');
+                    const color = isLate ? '#f44336' : '#4caf50';
+                    delayHtml = `<span style="color: ${color}; font-size: 0.85em; margin-left: 5px;">(${train.delay_msg})</span>`;
+                }
 
                 trainsList += `
                     <div style="padding: 6px 8px; margin: 2px 0; font-family: monospace; font-size: 0.85em; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee;">
                         <div style="flex: 1;">
                             <span style="font-weight: bold;">${lineNumber}</span> | 
-                            <span>${train.destination_name}</span>
+                            <span>${train.destination_name}${lengthStr}</span>
                             <span style="color: #666; margin-left: 5px;">(${this.formatTime(train.arrival_time)})</span>
                         </div>
                         <div style="font-weight: bold; color: #ff6b00; margin-left: 15px; white-space: nowrap;">
-                            ${train.minutes_until}'
+                            ${train.minutes_until}' ${delayHtml}
                         </div>
                     </div>
                 `;
@@ -306,10 +326,16 @@ class MapRenderer {
 
         const stop = this.gtfsData.stopsById.get(stopId);
         if (stop) {
-            L.popup({ maxWidth: 420 })
+            const popup = L.popup({ maxWidth: 420 })
                 .setLatLng([stop.lat, stop.lon])
                 .setContent(popupContent)
                 .openOn(this.map);
+
+            popup.on('remove', () => {
+                if (this.openStationPopup && this.openStationPopup.stopId === stopId) {
+                    this.openStationPopup = null;
+                }
+            });
         }
     }
 
@@ -340,6 +366,17 @@ class MapRenderer {
 
     setCurrentTime(time) {
         this.currentTime = time;
+
+        if (this.openStationPopup) {
+            this.refreshStationPopup();
+        }
+    }
+
+    refreshStationPopup() {
+        if (!this.openStationPopup) return;
+
+        const { stopId, stopName } = this.openStationPopup;
+        this.showStationPopup(stopId, stopName);
     }
 }
 

@@ -4,6 +4,8 @@ const CONFIG = {
     MAP_CENTER: [43.2630, -2.9350],
     MAP_ZOOM: 12,
     UPDATE_INTERVAL_MS: 50,
+    API_URL: 'https://api.metrobilbao.eus/api/stations/',
+    CORS_PROXY: '',
     COLORS: {
         primary: '#0057A4',
         secondary: '#DC241F',

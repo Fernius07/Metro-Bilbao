@@ -85,7 +85,13 @@ class GTFSParser {
     processData() {
         console.time('GTFS Processing');
 
+        this.processed.stationCodes = new Map();
+
         this.data.stops.forEach(stop => {
+            if (stop.stop_code && stop.stop_code.length === 3) {
+                this.processed.stationCodes.set(stop.stop_id, stop.stop_code);
+            }
+
             if (!/^\d/.test(stop.stop_name)) {
                 this.processed.stopsById.set(stop.stop_id, {
                     id: stop.stop_id,

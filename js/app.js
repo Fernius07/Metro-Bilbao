@@ -17,30 +17,23 @@ class App {
         this.updateUI();
 
         try {
-            // Initialize Map
             this.renderer = new MapRenderer('map', this.lang);
 
-            // Load Data
             document.getElementById('loading-text').textContent = i18n[this.lang].loading;
             const data = await this.parser.loadAll();
 
-            // Setup Simulator
             this.simulator = new TrainSimulator(data);
 
-            // Render Static Map
             this.renderer.renderStaticData(data);
 
-            // Pass references to renderer for station queries
             this.renderer.setGTFSData(data);
             this.renderer.setSimulator(this.simulator);
 
-            // Remove Loading Screen
             document.getElementById('loading-screen').style.opacity = 0;
             setTimeout(() => {
                 document.getElementById('loading-screen').style.display = 'none';
             }, 500);
 
-            // Start Loop
             this.loop();
 
         } catch (e) {
@@ -54,12 +47,11 @@ class App {
     loop(timestamp) {
         if (timestamp - this.lastUpdate > CONFIG.UPDATE_INTERVAL_MS) {
             const now = new Date();
-            this.renderer.setCurrentTime(now); // Update current time for station queries
+            this.renderer.setCurrentTime(now);
             const trains = this.simulator.update(now);
             this.renderer.updateTrains(trains);
             this.lastUpdate = timestamp;
 
-            // Update clock
             document.getElementById('clock').textContent = now.toLocaleTimeString();
         }
 
@@ -99,7 +91,6 @@ class App {
     }
 }
 
-// Start
 window.addEventListener('DOMContentLoaded', () => {
     const app = new App();
     app.init();

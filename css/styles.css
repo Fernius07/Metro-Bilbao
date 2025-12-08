@@ -28,7 +28,7 @@ body {
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     background-color: var(--bg-color);
     color: var(--text-color);
-    overflow: hidden; /* Map takes full screen */
+    overflow: hidden;
     transition: background-color 0.3s, color 0.3s;
 }
 
@@ -38,14 +38,13 @@ body {
     z-index: 1;
 }
 
-/* UI Overlay */
 .ui-overlay {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    pointer-events: none; /* Let clicks pass through to map */
+    pointer-events: none;
     z-index: 1000;
     display: flex;
     flex-direction: column;
@@ -116,7 +115,7 @@ button.active {
     padding: 1rem;
     border-radius: 8px;
     box-shadow: var(--shadow);
-    margin-top: auto; /* Push to bottom */
+    margin-top: auto;
     max-width: 300px;
     border: 1px solid var(--border-color);
 }
@@ -147,7 +146,6 @@ button.active {
     border: 2px solid #666;
 }
 
-/* Leaflet Customization */
 .leaflet-popup-content-wrapper {
     background: var(--panel-bg);
     color: var(--text-color);
@@ -159,7 +157,7 @@ button.active {
 }
 
 .train-marker {
-    transition: transform 0.1s linear; /* Smooth movement */
+    transition: transform 0.1s linear;
 }
 
 .train-icon-inner {
@@ -171,7 +169,6 @@ button.active {
     box-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
-/* Loading Overlay */
 #loading-screen {
     position: fixed;
     top: 0;
@@ -202,7 +199,6 @@ button.active {
     100% { transform: rotate(360deg); }
 }
 
-/* Responsive */
 @media (max-width: 600px) {
     .header-panel {
         width: 100%;

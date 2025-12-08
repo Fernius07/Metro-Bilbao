@@ -29,11 +29,11 @@ class MapRenderer {
         this.layers.base.standard.addTo(this.map);
         L.control.zoom({ position: 'bottomright' }).addTo(this.map);
 
-        this.trainMarkers = new Map(); // trip_id -> L.marker
+        this.trainMarkers = new Map();
         this.gtfsData = null;
         this.simulator = null;
         this.currentTime = null;
-        this.openTrainPopup = null; // Track open train popup
+        this.openTrainPopup = null;
     }
 
     setTheme(theme) {
@@ -58,8 +58,6 @@ class MapRenderer {
         this.routesById = processedData.routesById;
         this.shapesById = processedData.shapesById;
 
-        // 1. Draw Shapes - Consolidate by route+direction
-        // Group shapes by route and direction to avoid drawing duplicates
         const shapesByRouteDir = new Map();
 
         processedData.shapesById.forEach(shape => {
@@ -69,7 +67,6 @@ class MapRenderer {
             const trip = trips[0];
             const key = `${trip.route_id}_${trip.direction_id || '0'}`;
 
-            // Only keep the first shape for each route+direction
             if (!shapesByRouteDir.has(key)) {
                 shapesByRouteDir.set(key, {
                     shape: shape,
@@ -91,7 +88,6 @@ class MapRenderer {
             }).addTo(this.layers.shapes);
         });
 
-        // 2. Draw Stops
         processedData.stopsById.forEach(stop => {
             const marker = L.circleMarker([stop.lat, stop.lon], {
                 radius: 4,
@@ -102,7 +98,6 @@ class MapRenderer {
                 fillOpacity: 1
             }).bindTooltip(stop.name);
 
-            // Add click handler for station
             marker.on('click', () => {
                 this.showStationPopup(stop.id, stop.name);
             });
@@ -112,7 +107,6 @@ class MapRenderer {
     }
 
     getLineNumber(destinationName) {
-        // L2 for Kabiezes or Basauri, L1 for everything else
         if (destinationName && (destinationName.includes('Kabiezes') || destinationName.includes('Basauri'))) {
             return 'L2';
         }
@@ -122,49 +116,39 @@ class MapRenderer {
     updateTrains(trains) {
         const activeIds = new Set(trains.map(t => t.trip_id));
 
-        // Remove old trains
         for (const [id, marker] of this.trainMarkers) {
             if (!activeIds.has(id)) {
                 this.layers.trains.removeLayer(marker);
                 this.trainMarkers.delete(id);
-                // Clear open popup reference if this train is removed
                 if (this.openTrainPopup && this.openTrainPopup.tripId === id) {
                     this.openTrainPopup = null;
                 }
             }
         }
 
-        // Update/Add trains
         trains.forEach(train => {
             if (this.trainMarkers.has(train.trip_id)) {
-                // Move with smooth transition
                 const marker = this.trainMarkers.get(train.trip_id);
                 const element = marker.getElement();
                 if (element) {
-                    // Add transition if not already present
                     if (!element.style.transition) {
                         element.style.transition = 'all 0.5s linear';
                     }
                 }
                 marker.setLatLng([train.lat, train.lon]);
-                // Update tooltip with L[X] | [destino] format
                 const lineNumber = this.getLineNumber(train.destination_name);
                 marker.setTooltipContent(`${lineNumber} | ${train.destination_name || '...'}`);
 
-                // Update stored train data
                 const oldTrainData = marker.trainData;
                 marker.trainData = train;
 
-                // Check if popup is open and update it in real-time
                 if (this.openTrainPopup &&
                     this.openTrainPopup.tripId === train.trip_id &&
                     marker.getPopup() &&
                     marker.getPopup().isOpen()) {
-                    // Refresh the popup with new data
                     this.showTrainPopup(marker, train);
                 }
             } else {
-                // Create
                 let color = CONFIG.COLORS.secondary;
                 if (this.routesById && this.routesById.has(train.route_id)) {
                     color = this.routesById.get(train.route_id).color;
@@ -178,18 +162,15 @@ class MapRenderer {
                     fillOpacity: 1
                 });
 
-                // Set tooltip with L[X] | [destino] format
                 const lineNumber = this.getLineNumber(train.destination_name);
                 marker.bindTooltip(`${lineNumber} | ${train.destination_name || '...'}`);
                 marker.openTooltip();
 
-                // Add click handler for popup
                 marker.on('click', () => {
                     this.showTrainPopup(marker, train);
                     this.openTrainPopup = { tripId: train.trip_id, marker: marker };
                 });
 
-                // Track when popup closes
                 marker.on('popupclose', () => {
                     if (this.openTrainPopup && this.openTrainPopup.tripId === train.trip_id) {
                         this.openTrainPopup = null;
@@ -199,7 +180,6 @@ class MapRenderer {
                 marker.addTo(this.layers.trains);
                 this.trainMarkers.set(train.trip_id, marker);
 
-                // Store train data for updates
                 marker.trainData = train;
             }
         });
@@ -210,11 +190,9 @@ class MapRenderer {
         const route = this.routesById.get(train.route_id);
         const routeColor = route ? route.color : CONFIG.COLORS.primary;
 
-        // Get the trip to access all stop times
         const trip = this.gtfsData.tripsById.get(train.trip_id);
         if (!trip) return;
 
-        // Find current position in the trip
         const currentTime = this.currentTime ? this.getSecondsFromMidnight(this.currentTime) : 0;
         let nextStopIndex = 0;
 
@@ -225,7 +203,6 @@ class MapRenderer {
             }
         }
 
-        // Build station list
         let stationsList = '<div id="train-stations-list" style="max-height: 300px; overflow-y: auto; margin-top: 10px;">';
 
         trip.stop_times.forEach((stopTime, index) => {
@@ -275,7 +252,6 @@ class MapRenderer {
 
         marker.bindPopup(popupContent, { maxWidth: 400 }).openPopup();
 
-        // Auto-scroll to next station after popup opens
         setTimeout(() => {
             const listElement = document.getElementById('train-stations-list');
             if (listElement) {
@@ -306,7 +282,6 @@ class MapRenderer {
                 const lineNumber = this.getLineNumber(train.destination_name);
                 const route = this.routesById.get(train.route_id);
 
-                // Format: L[X] | [destino] ([XX:XX])                            [XX]'
                 trainsList += `
                     <div style="padding: 6px 8px; margin: 2px 0; font-family: monospace; font-size: 0.85em; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee;">
                         <div style="flex: 1;">

@@ -32,7 +32,6 @@ class GTFSParser {
         const promises = files.map(file => this.fetchAndParse(file));
         const results = await Promise.allSettled(promises);
 
-        // Check for critical failures
         const criticalFiles = ['stops.txt', 'routes.txt', 'trips.txt', 'stop_times.txt', 'shapes.txt'];
         const failedCritical = results.filter((r, i) => r.status === 'rejected' && criticalFiles.includes(files[i]));
 
@@ -54,7 +53,6 @@ class GTFSParser {
             console.log(`Loaded ${filename}: ${this.data[name].length} records`);
         } catch (e) {
             console.warn(`Could not load ${filename}:`, e);
-            // Return empty array for non-critical files
             const name = filename.replace('.txt', '');
             this.data[name] = [];
         }
@@ -70,13 +68,7 @@ class GTFSParser {
         const result = [];
 
         for (let i = 1; i < lines.length; i++) {
-            // Simple CSV split handling quotes roughly (assuming no commas inside quotes for this simple parser)
-            // For robust GTFS, a regex or state machine is better, but this suffices for standard simple GTFS
-            // Let's use a slightly better regex for splitting
             const row = lines[i];
-            // Regex to match CSV fields, handling quotes
-            const matches = row.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
-            // Fallback for simple split if regex fails or complex cases
             const values = row.split(',').map(v => v.trim().replace(/^"|"$/g, ''));
 
             if (values.length === headers.length) {
@@ -93,8 +85,6 @@ class GTFSParser {
     processData() {
         console.time('GTFS Processing');
 
-        // 1. Index Stops
-        // Filter stops starting with number
         this.data.stops.forEach(stop => {
             if (!/^\d/.test(stop.stop_name)) {
                 this.processed.stopsById.set(stop.stop_id, {
@@ -117,8 +107,6 @@ class GTFSParser {
             });
         });
 
-        // 3. Process Shapes (Geometry)
-        // Group by shape_id and sort by sequence
         const shapesRaw = new Map();
         this.data.shapes.forEach(s => {
             if (!shapesRaw.has(s.shape_id)) shapesRaw.set(s.shape_id, []);
@@ -133,7 +121,6 @@ class GTFSParser {
         shapesRaw.forEach((points, id) => {
             points.sort((a, b) => a.seq - b.seq);
 
-            // Calculate cumulative distance if missing
             if (points[0].dist === null) {
                 let totalDist = 0;
                 points[0].dist = 0;
@@ -151,10 +138,6 @@ class GTFSParser {
             });
         });
 
-        // 4. Index Trips & Stop Times
-        // We need to link trips to shapes and schedules
-
-        // First, group stop_times by trip_id
         const stopTimesByTrip = new Map();
         this.data.stop_times.forEach(st => {
             if (!stopTimesByTrip.has(st.trip_id)) stopTimesByTrip.set(st.trip_id, []);
@@ -167,10 +150,8 @@ class GTFSParser {
             });
         });
 
-        // Sort stop times
         stopTimesByTrip.forEach(times => times.sort((a, b) => a.seq - b.seq));
 
-        // Create Trip objects
         this.data.trips.forEach(trip => {
             const stopTimes = stopTimesByTrip.get(trip.trip_id);
             if (!stopTimes) return;
@@ -186,7 +167,6 @@ class GTFSParser {
 
             this.processed.tripsById.set(trip.trip_id, tripObj);
 
-            // Project stops onto shape if shape_dist is missing
             if (trip.shape_id && stopTimes.some(st => st.shape_dist === null)) {
                 const shape = this.processed.shapesById.get(trip.shape_id);
                 if (shape) {
@@ -202,16 +182,14 @@ class GTFSParser {
             }
         });
 
-        // 5. Copy calendar data
         this.processed.calendar = this.data.calendar || [];
         this.processed.calendar_dates = this.data.calendar_dates || [];
 
         console.timeEnd('GTFS Processing');
     }
 
-    // Helper: Haversine distance in meters
     haversine(p1, p2) {
-        const R = 6371e3; // metres
+        const R = 6371e3;
         const φ1 = p1.lat * Math.PI / 180;
         const φ2 = p2.lat * Math.PI / 180;
         const Δφ = (p2.lat - p1.lat) * Math.PI / 180;
@@ -225,15 +203,13 @@ class GTFSParser {
         return R * c;
     }
 
-    // Project stops onto shape to calculate shape_dist_traveled
     projectStopsOntoShape(stopTimes, shape) {
         stopTimes.forEach(st => {
-            if (st.shape_dist !== null) return; // Already has distance
+            if (st.shape_dist !== null) return;
 
             const stop = this.processed.stopsById.get(st.stop_id);
             if (!stop) return;
 
-            // Find closest point on shape
             let minDist = Infinity;
             let closestShapeDist = 0;
 
@@ -249,7 +225,6 @@ class GTFSParser {
         });
     }
 
-    // Helper: Parse HH:MM:SS to seconds from midnight (handles > 24h)
     parseTime(timeStr) {
         if (!timeStr) return 0;
         const parts = timeStr.split(':').map(Number);

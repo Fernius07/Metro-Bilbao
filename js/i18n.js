@@ -23,7 +23,7 @@ const i18n = {
         arrival_time: "Hora de llegada",
         at_next_stop: "A próxima parada",
         at_destination: "A destino",
-        static_note: "Denbora errealeko datuak Metro Bilbaoko APIaren bidez",
+        static_note: "Datos en tiempo real a través de la API de Metro Bilbao",
         upcoming_trains: "Próximos trenes",
         minutes: "minutos",
         departing_trains: "Trenes que salen",

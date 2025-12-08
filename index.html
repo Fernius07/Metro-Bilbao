@@ -6,29 +6,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Metro Bilbao - GTFS Viewer</title>
 
-    <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
         integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
 
-    <!-- Custom CSS -->
     <link rel="stylesheet" href="css/styles.css">
 </head>
 
 <body data-theme="light">
 
-    <!-- Loading Screen -->
     <div id="loading-screen">
         <div class="loader"></div>
         <h2 id="loading-text">Cargando...</h2>
     </div>
 
-    <!-- Map Container -->
     <div id="map"></div>
 
-    <!-- UI Overlay -->
     <div class="ui-overlay">
 
-        <!-- Header / Controls -->
         <div class="header-panel">
             <div class="header-top">
                 <h1 data-i18n="title">Metro Bilbao</h1>
@@ -48,7 +42,6 @@
             </div>
         </div>
 
-        <!-- Legend / Layers -->
         <div class="legend-panel">
             <div class="legend-item">
                 <span class="legend-icon icon-train"></span>
@@ -70,11 +63,9 @@
 
     </div>
 
-    <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
-    <!-- App Logic -->
     <script type="module" src="js/app.js"></script>
 </body>
 

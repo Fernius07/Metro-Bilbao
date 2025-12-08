@@ -96,7 +96,6 @@ class GTFSParser {
             }
         });
 
-        // 2. Index Routes
         this.data.routes.forEach(route => {
             this.processed.routesById.set(route.route_id, {
                 id: route.route_id,

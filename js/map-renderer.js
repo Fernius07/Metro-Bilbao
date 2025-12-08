@@ -11,7 +11,6 @@ class MapRenderer {
             attributionControl: false
         });
 
-        // Layers
         this.layers = {
             base: {
                 standard: L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
@@ -75,7 +74,6 @@ class MapRenderer {
             }
         });
 
-        // Draw consolidated shapes
         shapesByRouteDir.forEach(({ shape, route_id }) => {
             const route = processedData.routesById.get(route_id);
             const latlngs = shape.points.map(p => [p.lat, p.lon]);
@@ -274,7 +272,6 @@ class MapRenderer {
         if (result.trains.length === 0) {
             trainsList = '<p style="color: #999; font-style: italic; padding: 10px;">No hay trenes próximos</p>';
         } else {
-            // Limit to 10 trains
             const trainsToShow = result.trains.slice(0, 10);
 
             trainsList = '<div style="padding: 5px 0;">';
@@ -307,7 +304,6 @@ class MapRenderer {
             </div>
         `;
 
-        // Find the station marker and open popup
         const stop = this.gtfsData.stopsById.get(stopId);
         if (stop) {
             L.popup({ maxWidth: 420 })

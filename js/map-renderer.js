@@ -121,12 +121,10 @@ class MapRenderer {
                 }
             }
         }
+
         trains.forEach(train => {
             if (this.trainMarkers.has(train.trip_id)) {
                 const marker = this.trainMarkers.get(train.trip_id);
-                // Animate movement using CSS transition on the element if possible, 
-                // but Leaflet moves the marker by changing translate3d. 
-                // The CSS .train-marker transition helps this smooth out.
                 marker.setLatLng([train.lat, train.lon]);
                 const lineNumber = this.getLineNumber(train.destination_name);
                 marker.setTooltipContent(`${lineNumber} | ${train.destination_name || '...'}`);

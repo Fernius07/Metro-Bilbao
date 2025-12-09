@@ -5,6 +5,7 @@
         this.stationCodes = stationCodes || new Map();
         this.realTimeOffsets = new Map();
         this.trainLengths = new Map();
+        this.tripStates = new Map(); // Tracks last time/state for smoothing
     }
     update(now) {
         const secondsFromMidnight = this.getSecondsFromMidnight(now);
@@ -22,10 +23,64 @@
                 currentTrips.push(trip);
             }
         }
+        const currentTimestamp = now.getTime();
+
+        // Clean up old trip states
+        const activeTripIds = new Set(currentTrips.map(t => t.id));
+        for (const id of this.tripStates.keys()) {
+            if (!activeTripIds.has(id)) {
+                this.tripStates.delete(id);
+            }
+        }
+
         const newPositions = new Map();
         for (const trip of currentTrips) {
             const offset = this.realTimeOffsets.get(trip.id) || 0;
-            const position = this.calculateTrainPosition(trip, secondsFromMidnight - offset);
+            const targetAdjustedTime = secondsFromMidnight - offset;
+
+            // Time Smoothing Logic
+            let finalTime = targetAdjustedTime;
+
+            if (this.tripStates.has(trip.id)) {
+                const state = this.tripStates.get(trip.id);
+                const timeSinceLastUpdate = (currentTimestamp - state.lastWallClock) / 1000; // seconds
+
+                // Determine allowed speed range
+                let minSpeed = 0.0;
+                // If we were moving, don't stop completely (maintain 20% speed)
+                // "No quiero que se queden parados si no son en las estaciones"
+                if (state.status === 'moving') {
+                    minSpeed = 0.2;
+                }
+
+                // Allow catching up up to 3x speed
+                const maxSpeed = 3.0;
+
+                const minAdvance = timeSinceLastUpdate * minSpeed;
+                const maxAdvance = timeSinceLastUpdate * maxSpeed;
+
+                const rawDiff = targetAdjustedTime - state.lastAdjustedTime;
+                let validAdvance = rawDiff;
+
+                // Clamp the advance between min and max allowed movement
+                if (validAdvance < minAdvance) {
+                    validAdvance = minAdvance;
+                } else if (validAdvance > maxAdvance) {
+                    validAdvance = maxAdvance;
+                }
+
+                finalTime = state.lastAdjustedTime + validAdvance;
+            }
+
+            const position = this.calculateTrainPosition(trip, finalTime);
+
+            // Store state for next frame
+            this.tripStates.set(trip.id, {
+                lastAdjustedTime: finalTime,
+                lastWallClock: currentTimestamp,
+                status: position ? position.status : 'moving'
+            });
+
             if (position) {
                 position.delay = offset;
                 newPositions.set(trip.id, position);

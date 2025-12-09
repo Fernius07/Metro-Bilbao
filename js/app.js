@@ -17,8 +17,6 @@ class App {
     }
 
     async init() {
-        this.updateUI();
-
         try {
             this.renderer = new MapRenderer('map', this.lang);
 
@@ -92,40 +90,17 @@ class App {
         }
     }
 
-    toggleTheme() {
-        const body = document.body;
-        const current = body.getAttribute('data-theme');
-        const next = current === 'dark' ? 'light' : 'dark';
-        body.setAttribute('data-theme', next);
-        if (this.renderer) this.renderer.setTheme(next);
-    }
-
-    setLanguage(lang) {
-        this.lang = lang;
-        this.updateUI();
-        if (this.renderer) {
-            this.renderer.setLanguage(lang);
-        }
-    }
-
-    updateUI() {
-        document.querySelectorAll('[data-i18n]').forEach(el => {
-            const key = el.getAttribute('data-i18n');
-            if (i18n[this.lang][key]) {
-                el.textContent = i18n[this.lang][key];
-            }
-        });
-
-        document.getElementById('btn-lang-es').className = this.lang === 'es' ? 'active' : '';
-        document.getElementById('btn-lang-eu').className = this.lang === 'eu' ? 'active' : '';
-    }
-
     setupEventListeners() {
-        document.getElementById('btn-theme').addEventListener('click', () => this.toggleTheme());
-        document.getElementById('btn-lang-es').addEventListener('click', () => this.setLanguage('es'));
-        document.getElementById('btn-lang-eu').addEventListener('click', () => this.setLanguage('eu'));
-        document.getElementById('btn-layer-std').addEventListener('click', () => this.renderer.toggleLayer('standard'));
-        document.getElementById('btn-layer-sat').addEventListener('click', () => this.renderer.toggleLayer('satellite'));
+        // Layer toggle button - cycles between standard and satellite
+        let currentLayer = 'standard';
+        const layerToggleBtn = document.getElementById('layer-toggle-btn');
+
+        if (layerToggleBtn) {
+            layerToggleBtn.addEventListener('click', () => {
+                currentLayer = currentLayer === 'standard' ? 'satellite' : 'standard';
+                this.renderer.toggleLayer(currentLayer);
+            });
+        }
     }
 }
 

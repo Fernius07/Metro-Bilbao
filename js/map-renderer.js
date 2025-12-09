@@ -181,6 +181,12 @@ class MapRenderer {
                     color = this.routesById.get(train.route_id).color;
                 }
 
+                // Use black for L2 trains
+                const lineNumber = this.getLineNumber(train.destination_name);
+                if (lineNumber === 'L2') {
+                    color = '#000000';
+                }
+
                 // Create custom icon or continue using circle marker with class
                 // Using divIcon for better CSS control if needed, but circleMarker is performant.
                 // The user asked for icons. Currently using circle markers which are just dots.
@@ -194,8 +200,8 @@ class MapRenderer {
                     className: 'train-marker'
                 });
 
-                const lineNumber = this.getLineNumber(train.destination_name);
-                marker.bindTooltip(`${lineNumber} | ${train.destination_name || '...'}`, {
+                const lineNumber2 = this.getLineNumber(train.destination_name);
+                marker.bindTooltip(`${lineNumber2} | ${train.destination_name || '...'}`, {
                     direction: 'top',
                     offset: [0, -5]
                 });
@@ -221,6 +227,15 @@ class MapRenderer {
         this.panelTitle.textContent = title;
         this.panelSubtitle.textContent = subtitle;
         this.panelContent.innerHTML = contentHtml;
+
+        // Set title color based on line (black for L2, default for L1)
+        if (type === 'train' && title.startsWith('L2')) {
+            this.panelTitle.style.color = '#000000';
+        } else if (type === 'train' && title.startsWith('L1')) {
+            this.panelTitle.style.color = 'var(--primary-color)';
+        } else {
+            this.panelTitle.style.color = ''; // Reset to default
+        }
 
         this.panelElement.classList.add('visible');
         document.body.classList.add('panel-open');
@@ -350,6 +365,9 @@ class MapRenderer {
             const route = this.routesById.get(train.route_id);
             const routeColor = route ? route.color : '#000';
 
+            // Use black background for L2, route color for L1
+            const badgeColor = lineNumber === 'L2' ? '#000' : routeColor;
+
             const lengthStr = train.length === 5 ? ' <small>(5 coches)</small>' : '';
 
             let delayHtml = '';
@@ -363,7 +381,7 @@ class MapRenderer {
                 <div class="station-list-item" style="padding: 12px 0;">
                     <div style="display:flex; flex-direction:column; flex: 1;">
                         <div style="display:flex; align-items:center;">
-                            <span style="background:${routeColor}; color:white; padding:2px 6px; border-radius:4px; font-size:0.8em; margin-right:8px; font-weight:bold;">${lineNumber}</span>
+                            <span style="background:${badgeColor}; color:white; padding:2px 6px; border-radius:4px; font-size:0.8em; margin-right:8px; font-weight:bold;">${lineNumber}</span>
                             <span style="font-weight:600;">${train.destination_name} ${lengthStr}</span>
                         </div>
                         <div style="font-size:0.85em; color:#666; margin-top:4px;">

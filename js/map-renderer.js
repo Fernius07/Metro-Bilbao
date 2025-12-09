@@ -9,6 +9,8 @@ class MapRenderer {
             zoomControl: false,
             attributionControl: false
         });
+        this.map.createPane('trainsPane');
+        this.map.getPane('trainsPane').style.zIndex = 650;
         this.layers = {
             base: {
                 standard: L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
@@ -154,7 +156,8 @@ class MapRenderer {
                     color: '#fff',
                     weight: 2,
                     fillOpacity: 1,
-                    className: 'train-marker'
+                    className: 'train-marker',
+                    pane: 'trainsPane'
                 });
                 const lineNumber2 = this.getLineNumber(train.destination_name);
                 marker.bindTooltip(`${lineNumber2} | ${train.destination_name || '...'}`, {

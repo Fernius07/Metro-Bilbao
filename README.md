@@ -1,58 +1,113 @@
-# Metro Bilbao GTFS Visualizer
+# Metro Bilbao - Visualizador en Tiempo Real
 
-Un visualizador de tráfico de metro estático basado en horarios GTFS. Muestra la posición estimada de los trenes sobre el mapa utilizando datos de horarios programados.
+Aplicación web interactiva que muestra la posición en tiempo real de los trenes del Metro de Bilbao, combinando datos GTFS estáticos con información en tiempo real de la API oficial.
 
 ## Características
 
-- **Mapa Interactivo**: Basado en Leaflet.
-- **Simulación de Trenes**: Interpolación de movimiento basada en horarios GTFS.
-- **Multilenguaje**: Español y Euskera.
-- **Modo Oscuro/Claro**: Adaptable a preferencias de usuario.
-- **Sin Servidor**: Funciona como sitio estático (SPA).
+- **Visualización en Tiempo Real**: Muestra la posición actual de todos los trenes en servicio
+- **Sincronización con API**: Actualización automática cada 10 segundos con datos reales
+- **Mapa Interactivo**: Basado en Leaflet con dos capas (estándar y satélite)
+- **Panel de Información**: Detalles de trenes y estaciones al hacer clic
+- **Diseño Responsive**: Optimizado para escritorio y móvil
+- **Colores Corporativos**: Línea 1 (rojo) y Línea 2 (negro)
+- **Sin Servidor**: Funciona como sitio estático (SPA)
+
+## Tecnologías
+
+- **Frontend**: HTML5, CSS3, JavaScript (ES6 Modules)
+- **Mapas**: Leaflet.js
+- **Datos**: GTFS estático + API en tiempo real de Metro Bilbao
+- **Diseño**: CSS personalizado con variables y responsive design
 
 ## Instalación y Uso
 
 ### 1. Requisitos
-No requiere instalación de software (Node.js, Python, etc.) para ejecutarse, solo un navegador web moderno.
+No requiere instalación de software adicional, solo un navegador web moderno.
 
 ### 2. Ejecución Local
-Debido a las políticas de seguridad de los navegadores (CORS), **no se puede abrir directamente el archivo `index.html`** haciendo doble clic (protocolo `file://`).
+Debido a las políticas CORS, no se puede abrir directamente `index.html`. Necesitas un servidor local:
 
-Para probarlo localmente, necesitas un servidor estático simple.
-- **Opción A (VS Code)**: Instala la extensión "Live Server" y haz clic en "Go Live".
-- **Opción B (Python)**: Abre una terminal en la carpeta y ejecuta `python -m http.server`.
-- **Opción C (Node)**: Ejecuta `npx http-server .`.
+- **Opción A (VS Code)**: Extensión "Live Server" → clic en "Go Live"
+- **Opción B (Python)**: `python -m http.server`
+- **Opción C (Node)**: `npx http-server .`
 
 ### 3. Despliegue en GitHub Pages
-Este proyecto está diseñado para funcionar perfectamente en GitHub Pages.
-1. Sube todos los archivos a un repositorio de GitHub.
-2. Ve a Settings > Pages y activa el despliegue desde la rama `main` (o `master`).
-3. La web cargará los archivos GTFS correctamente.
+1. Sube el proyecto a un repositorio de GitHub
+2. Settings → Pages → activa desde rama `main`
+3. La aplicación funcionará automáticamente
+
+## Estructura del Proyecto
+
+```
+Metro Bilbao/
+├── index.html              # Página principal
+├── css/
+│   └── styles.css         # Estilos de la aplicación
+├── js/
+│   ├── app.js            # Aplicación principal
+│   ├── config.js         # Configuración
+│   ├── gtfs-parser.js    # Parser de datos GTFS
+│   ├── i18n.js           # Traducciones (ES/EU)
+│   ├── map-renderer.js   # Renderizado del mapa
+│   ├── metro-api.js      # Cliente API tiempo real
+│   └── trains-simulator.js # Simulador de trenes
+├── gtfs/                  # Datos GTFS estáticos
+└── assets/               # Recursos (logo, loader)
+```
 
 ## Datos GTFS
 
-El proyecto incluye datos de ejemplo en la carpeta `/gtfs/`. Para usar datos reales de Metro Bilbao:
+El proyecto incluye datos GTFS en `/gtfs/`. Archivos requeridos:
+- `agency.txt`
+- `stops.txt`
+- `routes.txt`
+- `trips.txt`
+- `stop_times.txt`
+- `shapes.txt`
+- `calendar.txt`
+- `calendar_dates.txt`
 
-1. Consigue los archivos GTFS oficiales (normalmente un .zip).
-2. Descomprime los archivos `.txt` en la carpeta `/gtfs/` de este proyecto, sobrescribiendo los existentes.
-3. Archivos requeridos:
-   - `agency.txt`
-   - `stops.txt`
-   - `routes.txt`
-   - `trips.txt`
-   - `stop_times.txt`
-   - `shapes.txt`
-   - `calendar.txt`
-   - `calendar_dates.txt`
+Para actualizar los datos, reemplaza los archivos en la carpeta `/gtfs/`.
 
-> **Nota**: El sistema filtra automáticamente paradas que comienzan por números (entradas/salidas) y procesa la geometría de `shapes.txt`.
+## API en Tiempo Real
+
+La aplicación consume la API oficial de Metro Bilbao para obtener:
+- Tiempos de llegada en tiempo real
+- Retrasos y adelantos
+- Longitud de los trenes (3 o 5 coches)
+
+Endpoint: `https://www.metrobilbao.eus/api/trenes.php`
 
 ## Personalización
 
-Puedes editar `js/config.js` para cambiar:
-- Coordenadas iniciales del mapa.
-- Colores por defecto.
-- Intervalo de actualización.
+Edita `js/config.js` para modificar:
+- Coordenadas iniciales del mapa
+- Nivel de zoom
+- Colores corporativos
+- Intervalo de actualización
+
+## Funcionalidades
+
+### Mapa
+- **Capas**: Alterna entre vista estándar y satélite
+- **Líneas**: Visualización del trazado completo de L1 y L2
+- **Estaciones**: Marcadores clickeables en todas las paradas
+- **Trenes**: Marcadores en tiempo real (rojo para L1, negro para L2)
+
+### Paneles de Información
+- **Trenes**: Horarios de paradas, próxima estación, retrasos
+- **Estaciones**: Próximas salidas con tiempos de llegada
+
+### Responsive
+- **Desktop**: Panel lateral deslizante
+- **Mobile**: Panel inferior tipo "bottom sheet"
 
 ## Licencia
+
 MIT
+
+## Créditos
+
+- Datos GTFS: Metro Bilbao
+- API en tiempo real: Metro Bilbao
+- Mapas: OpenStreetMap, CARTO, Esri

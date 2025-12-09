@@ -1,4 +1,4 @@
-const CONFIG = {
+﻿const CONFIG = {
     GTFS_FOLDER: 'gtfs/',
     DEFAULT_LANGUAGE: 'es',
     MAP_CENTER: [43.2630, -2.9350],
@@ -16,5 +16,4 @@ const CONFIG = {
     },
     DEBUG: false
 };
-
 export default CONFIG;

@@ -1,9 +1,6 @@
-:root {
-    /* Metro Bilbao Corporate Colors */
+﻿:root {
     --primary-color: #E52A12;
-    /* Metro Red */
     --secondary-color: #97999B;
-    /* Metro Grey */
     --accent-color: #E52A12;
     --bg-color: #f8f9fa;
     --text-color: #333333;
@@ -12,10 +9,8 @@
     --shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     --font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
-
 [data-theme="dark"] {
     --primary-color: #ff4d4d;
-    /* Brighter red for dark mode */
     --secondary-color: #b0b3b8;
     --accent-color: #ff4d4d;
     --bg-color: #1a1a1a;
@@ -24,13 +19,11 @@
     --border-color: #404040;
     --shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
-
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
 }
-
 body {
     font-family: var(--font-family);
     background-color: var(--bg-color);
@@ -38,14 +31,11 @@ body {
     overflow: hidden;
     transition: background-color 0.3s, color 0.3s;
 }
-
 #map {
     width: 100vw;
     height: 100vh;
     z-index: 1;
 }
-
-/* UI Overlay Layer */
 .ui-overlay {
     position: absolute;
     top: 0;
@@ -59,8 +49,6 @@ body {
     justify-content: space-between;
     padding: 1rem;
 }
-
-/* Header Panel */
 .header-panel {
     pointer-events: auto;
     background: var(--panel-bg);
@@ -72,14 +60,12 @@ body {
     border: 1px solid var(--border-color);
     border-left: 5px solid var(--primary-color);
 }
-
 .header-top {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 0.8rem;
 }
-
 h1 {
     font-size: 1.4rem;
     font-weight: 800;
@@ -89,18 +75,15 @@ h1 {
     align-items: center;
     gap: 10px;
 }
-
 h1 img.logo {
     width: 28px;
     height: 28px;
     object-fit: contain;
 }
-
 .controls {
     display: flex;
     gap: 0.5rem;
 }
-
 button {
     background: var(--bg-color);
     border: 1px solid var(--border-color);
@@ -113,19 +96,16 @@ button {
     transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
-
 button:hover {
     background: var(--border-color);
     transform: translateY(-1px);
 }
-
 button.active {
     background: var(--primary-color);
     color: white;
     border-color: var(--primary-color);
     box-shadow: 0 2px 4px rgba(229, 42, 18, 0.3);
 }
-
 .status-bar {
     margin-top: 0.8rem;
     font-size: 0.85rem;
@@ -138,8 +118,6 @@ button.active {
     padding: 4px 8px;
     border-radius: 4px;
 }
-
-/* Layer Toggle Button */
 .layer-toggle-btn {
     position: fixed;
     top: 20px;
@@ -159,19 +137,15 @@ button.active {
     transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
     padding: 0;
 }
-
 .layer-toggle-btn:hover {
     background: var(--primary-color);
     color: white;
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(229, 42, 18, 0.3);
 }
-
 .layer-toggle-btn svg {
     pointer-events: none;
 }
-
-/* Info Panel (Replacing Popups) */
 .info-panel {
     position: fixed;
     top: 20px;
@@ -189,11 +163,9 @@ button.active {
     transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     overflow: hidden;
 }
-
 .info-panel.visible {
     transform: translateX(0);
 }
-
 .panel-header {
     padding: 1rem;
     background: var(--bg-color);
@@ -202,19 +174,16 @@ button.active {
     justify-content: space-between;
     align-items: flex-start;
 }
-
 .panel-title h2 {
     font-size: 1.2rem;
     color: var(--primary-color);
     margin-bottom: 4px;
 }
-
 .panel-title p {
     font-size: 0.9rem;
     color: var(--text-color);
     opacity: 0.7;
 }
-
 .close-btn {
     background: transparent;
     border: none;
@@ -226,45 +195,36 @@ button.active {
     opacity: 0.5;
     box-shadow: none;
 }
-
 .close-btn:hover {
     background: transparent;
     opacity: 1;
     color: var(--primary-color);
     transform: none;
 }
-
 .panel-content {
     padding: 1rem;
     overflow-y: auto;
     flex: 1;
 }
-
-/* List Styles */
 .station-list-item {
     display: flex;
     padding: 10px 0;
     border-bottom: 1px solid var(--border-color);
     transition: background-color 0.2s;
 }
-
 .station-list-item:last-child {
     border-bottom: none;
 }
-
 .station-time {
     font-family: 'Roboto Mono', monospace;
     color: var(--text-color);
     font-weight: 600;
     margin-left: auto;
 }
-
-/* Markers */
 .train-marker {
     transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
 }
-
 #loading-screen {
     position: fixed;
     top: 0;
@@ -279,20 +239,16 @@ button.active {
     justify-content: center;
     transition: opacity 0.5s;
 }
-
 #loading-screen img {
     width: 120px;
     height: 120px;
     margin-bottom: 1rem;
 }
-
 #loading-screen h2 {
     color: var(--text-color);
     font-size: 1.2rem;
     font-weight: 600;
 }
-
-/* Mobile Responsive */
 @media (max-width: 768px) {
     .header-panel {
         width: 100%;
@@ -302,26 +258,19 @@ button.active {
         border-bottom: 4px solid var(--primary-color);
         padding: 0.8rem;
     }
-
     h1 {
         font-size: 1.2rem;
     }
-
-    /* Layer toggle button positioning on mobile - below header */
     .layer-toggle-btn {
         top: auto;
         bottom: auto;
         right: 15px;
-        /* Position relative to header height + padding */
         margin-top: 10px;
         width: 44px;
         height: 44px;
         position: absolute;
         top: 110px;
-        /* Adjust based on header height */
     }
-
-    /* Info Panel - Bottom Sheet on Mobile */
     .info-panel {
         top: auto;
         bottom: 0;
@@ -330,27 +279,19 @@ button.active {
         width: 100%;
         height: auto;
         max-height: 40vh;
-        /* "Recuadro pequeño" - small box */
         border-radius: 20px 20px 0 0;
         transform: translateY(110%);
         box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.2);
         padding-bottom: 20px;
-        /* Safe area */
     }
-
     .info-panel.visible {
         transform: translateY(0);
     }
-
-    /* Ensure map controls don't get hidden */
     .leaflet-bottom.leaflet-right {
         bottom: 20px;
         transition: bottom 0.3s;
     }
-
-    /* Move zoom controls up */
     body.panel-open .leaflet-bottom.leaflet-right {
         bottom: calc(40vh + 140px);
-        /* Clear the panel and legend */
     }
 }

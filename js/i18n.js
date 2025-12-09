@@ -1,4 +1,4 @@
-const i18n = {
+﻿const i18n = {
     es: {
         title: "Metro Bilbao - Tiempo Real",
         loading: "Cargando sistema...",
@@ -62,5 +62,4 @@ const i18n = {
         arriving_in: "Iritsiko da"
     }
 };
-
 export default i18n;

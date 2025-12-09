@@ -298,7 +298,7 @@ class MapRenderer {
                             <span style="font-weight:600;">${train.destination_name} ${lengthStr}</span>
                         </div>
                         <div style="font-size:0.85em; color:#666; margin-top:4px;">
-                             Salida: ${this.formatTime(train.arrival_time)}
+                            ${this.formatTime(train.arrival_time)}
                         </div>
                     </div>
                     <div style="text-align: right; min-width: 70px;">

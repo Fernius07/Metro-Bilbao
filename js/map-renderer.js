@@ -41,6 +41,10 @@ class MapRenderer {
             if (e.originalEvent.target.closest('.info-panel')) return;
             this.closeInfoPanel();
         });
+
+        this.searchInput = document.getElementById('station-search');
+        this.searchResults = document.getElementById('search-results');
+        this.setupSearch();
     }
     setTheme(theme) {
         if (theme === 'dark') {
@@ -85,17 +89,20 @@ class MapRenderer {
             }).addTo(this.layers.shapes);
         });
         processedData.stopsById.forEach(stop => {
-            const marker = L.circleMarker([stop.lat, stop.lon], {
-                radius: 4,
-                fillColor: '#fff',
-                color: '#97999B',
-                weight: 2,
-                opacity: 1,
-                fillOpacity: 1
+            const icon = L.divIcon({
+                className: 'custom-station-marker',
+                html: `<div class="station-icon">
+                    <img src="assets/Símbolo_del_Metro_de_Bilbao.png" alt="Metro">
+                </div>`,
+                iconSize: [20, 20],
+                iconAnchor: [10, 10],
+                popupAnchor: [0, -10]
             });
+
+            const marker = L.marker([stop.lat, stop.lon], { icon: icon });
             marker.bindTooltip(stop.name, {
                 direction: 'top',
-                offset: [0, -5]
+                offset: [0, -20]
             });
             marker.on('click', (e) => {
                 L.DomEvent.stopPropagation(e);
@@ -129,7 +136,6 @@ class MapRenderer {
                 const lineNumber = this.getLineNumber(train.destination_name);
                 marker.setTooltipContent(`${lineNumber} | ${train.destination_name || '...'}`);
                 marker.trainData = train;
-                // Update panel if open for this train
                 if (this.activePanel && this.activePanel.type === 'train' && this.activePanel.id === train.trip_id) {
                     this.updateTrainPanelContent(train);
                 }
@@ -138,15 +144,10 @@ class MapRenderer {
                 if (this.routesById && this.routesById.has(train.route_id)) {
                     color = this.routesById.get(train.route_id).color;
                 }
-                // Use black for L2 trains
                 const lineNumber = this.getLineNumber(train.destination_name);
                 if (lineNumber === 'L2') {
                     color = '#000000';
                 }
-                // Create custom icon or continue using circle marker with class
-                // Using divIcon for better CSS control if needed, but circleMarker is performant.
-                // The user asked for icons. Currently using circle markers which are just dots.
-                // Let's stick to circle markers but make them distinct.
                 const marker = L.circleMarker([train.lat, train.lon], {
                     radius: 7,
                     fillColor: color,
@@ -170,19 +171,17 @@ class MapRenderer {
             }
         });
     }
-    // --- Side Panel Methods ---
     openInfoPanel(title, subtitle, contentHtml, type, id) {
         if (!this.panelElement) return;
         this.panelTitle.textContent = title;
         this.panelSubtitle.textContent = subtitle;
         this.panelContent.innerHTML = contentHtml;
-        // Set title color based on line (black for L2, default for L1)
         if (type === 'train' && title.startsWith('L2')) {
             this.panelTitle.style.color = '#000000';
         } else if (type === 'train' && title.startsWith('L1')) {
             this.panelTitle.style.color = 'var(--primary-color)';
         } else {
-            this.panelTitle.style.color = ''; // Reset to default
+            this.panelTitle.style.color = '';
         }
         this.panelElement.classList.add('visible');
         document.body.classList.add('panel-open');
@@ -196,7 +195,6 @@ class MapRenderer {
     }
     showTrainPanel(train) {
         const lineNumber = this.getLineNumber(train.destination_name);
-        // Initial render
         this.updateTrainPanelContent(train);
     }
     updateTrainPanelContent(train) {
@@ -215,7 +213,6 @@ class MapRenderer {
         }
         let content = '<div class="station-list">';
         trip.stop_times.forEach((stopTime, index) => {
-            // Only show previous 1 stop and upcoming stops to avoid massive list
             if (index < nextStopIndex - 1) return;
             const stopInfo = this.gtfsData.stopsById.get(stopTime.stop_id);
             const isPast = index < nextStopIndex;
@@ -223,10 +220,9 @@ class MapRenderer {
             const delay = train.delay || 0;
             const adjustedArrival = stopTime.arrival + delay;
             const minutesUntil = Math.round((adjustedArrival - currentTime) / 60);
-            // Styling logic
             const color = isPast ? '#999' : (isNext ? 'var(--primary-color)' : 'var(--text-color)');
             const fontWeight = isNext ? 'bold' : 'normal';
-            const bgColor = isNext ? 'rgba(229, 42, 18, 0.05)' : 'transparent'; // Light red for next
+            const bgColor = isNext ? 'rgba(229, 42, 18, 0.05)' : 'transparent';
             let delayHtml = '';
             if (!isPast && delay !== 0) {
                 const delayMin = Math.round(delay / 60);
@@ -255,16 +251,11 @@ class MapRenderer {
             `;
         });
         content += '</div>';
-        // If panel is already open for this train, just update content
-        // Else open it
         if (this.activePanel && this.activePanel.type === 'train' && this.activePanel.id === train.trip_id) {
             this.panelContent.innerHTML = content;
         } else {
             this.openInfoPanel(title, subtitle, content, 'train', train.trip_id);
-            // Scroll to next station
             setTimeout(() => {
-                // Not easily possible with string injection unless we add IDs.
-                // For now, list is filtered so next station is near top.
             }, 100);
         }
     }
@@ -272,12 +263,10 @@ class MapRenderer {
         if (!this.simulator || !this.currentTime || !this.gtfsData) {
             return;
         }
-        const result = this.simulator.getUpcomingTrainsForStation(stopId, this.currentTime, 45); // 45 min window
-        // Initial render
+        const result = this.simulator.getUpcomingTrainsForStation(stopId, this.currentTime, 45);
         this.updateStationPanelContent(stopId, stopName, result);
         this.openInfoPanel(stopName, 'Próximas salidas', this.renderStationContent(result), 'station', stopId);
     }
-    // Helper to generate station HTML
     renderStationContent(result) {
         if (result.trains.length === 0) {
             return '<div style="padding: 2rem; text-align: center; color: #999;">No hay trenes próximos en los siguientes 45 min.</div>';
@@ -288,7 +277,6 @@ class MapRenderer {
             const lineNumber = this.getLineNumber(train.destination_name);
             const route = this.routesById.get(train.route_id);
             const routeColor = route ? route.color : '#000';
-            // Use black background for L2, route color for L1
             const badgeColor = lineNumber === 'L2' ? '#000' : routeColor;
             const lengthStr = train.length === 5 ? ' <small>(5 coches)</small>' : '';
             let delayHtml = '';
@@ -321,12 +309,10 @@ class MapRenderer {
         return content;
     }
     updateStationPanelContent(stopId, stopName, result) {
-        // This is called by refresh loop or initial show
-        // Logic mainly in renderStationContent
     }
     refreshStationPopup() {
         if (!this.activePanel || this.activePanel.type !== 'station') return;
-        const { id } = this.activePanel; // stopId
+        const { id } = this.activePanel;
         const stop = this.gtfsData.stopsById.get(id);
         if (!stop) return;
         const result = this.simulator.getUpcomingTrainsForStation(id, this.currentTime, 45);
@@ -356,6 +342,120 @@ class MapRenderer {
         this.currentTime = time;
         if (this.activePanel && this.activePanel.type === 'station') {
             this.refreshStationPopup();
+        }
+    }
+
+    setupSearch() {
+        if (!this.searchInput || !this.searchResults) return;
+
+        this.searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.trim();
+            if (query.length === 0) {
+                this.searchResults.classList.remove('visible');
+                this.searchResults.innerHTML = '';
+                return;
+            }
+            this.performSearch(query);
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.search-container')) {
+                this.searchResults.classList.remove('visible');
+            }
+        });
+
+        this.searchInput.addEventListener('focus', () => {
+            if (this.searchInput.value.trim().length > 0) {
+                this.performSearch(this.searchInput.value.trim());
+            }
+        });
+    }
+
+    performSearch(query) {
+        if (!this.gtfsData || !this.gtfsData.stopsById) return;
+
+        const normalizedQuery = query.toLowerCase();
+        const matches = [];
+        const seenNames = new Set();
+
+        const allStops = Array.from(this.gtfsData.stopsById.values());
+        const usageCounts = this.gtfsData.stopUsageCounts || new Map();
+
+        allStops.sort((a, b) => {
+            const usageA = usageCounts.get(a.id) || 0;
+            const usageB = usageCounts.get(b.id) || 0;
+            if (usageA !== usageB) {
+                return usageB - usageA;
+            }
+            return a.id.length - b.id.length;
+        });
+
+        for (const stop of allStops) {
+            if (stop.name.toLowerCase().includes(normalizedQuery)) {
+                if (!seenNames.has(stop.name)) {
+                    matches.push(stop);
+                    seenNames.add(stop.name);
+                }
+            }
+        }
+
+        matches.sort((a, b) => {
+            const aName = a.name.toLowerCase();
+            const bName = b.name.toLowerCase();
+            const aStarts = aName.startsWith(normalizedQuery);
+            const bStarts = bName.startsWith(normalizedQuery);
+            if (aStarts && !bStarts) return -1;
+            if (!aStarts && bStarts) return 1;
+            return aName.localeCompare(bName);
+        });
+
+        this.displaySearchResults(matches.slice(0, 10));
+    }
+
+    displaySearchResults(results) {
+        if (results.length === 0) {
+            this.searchResults.classList.remove('visible');
+            return;
+        }
+
+        let content = '';
+        results.forEach(stop => {
+            content += `
+                <div class="search-result-item" data-stop-id="${stop.id}">
+                    <div class="station-icon-small">
+                        <img src="assets/Símbolo_del_Metro_de_Bilbao.png" alt="M">
+                    </div>
+                    <span class="station-name">${stop.name}</span>
+                </div>
+            `;
+        });
+
+        this.searchResults.innerHTML = content;
+        this.searchResults.classList.add('visible');
+
+        const items = this.searchResults.querySelectorAll('.search-result-item');
+        items.forEach(item => {
+            item.addEventListener('click', () => {
+                const stopId = item.getAttribute('data-stop-id');
+                const stop = this.gtfsData.stopsById.get(stopId);
+                if (stop) {
+                    this.selectStation(stop);
+                }
+            });
+        });
+    }
+
+    selectStation(stop) {
+        this.searchInput.value = '';
+        this.searchResults.classList.remove('visible');
+
+        this.map.flyTo([stop.lat, stop.lon], 16, {
+            duration: 1.5,
+            easeLinearity: 0.25
+        });
+
+        if (stop && stop.id) {
+            this.showStationPanel(stop.id, stop.name);
         }
     }
 }

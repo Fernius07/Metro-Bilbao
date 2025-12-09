@@ -9,6 +9,7 @@
     --shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     --font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
+
 [data-theme="dark"] {
     --primary-color: #ff4d4d;
     --secondary-color: #b0b3b8;
@@ -19,11 +20,13 @@
     --border-color: #404040;
     --shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
+
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
 }
+
 body {
     font-family: var(--font-family);
     background-color: var(--bg-color);
@@ -31,11 +34,13 @@ body {
     overflow: hidden;
     transition: background-color 0.3s, color 0.3s;
 }
+
 #map {
     width: 100vw;
     height: 100vh;
     z-index: 1;
 }
+
 .ui-overlay {
     position: absolute;
     top: 0;
@@ -46,9 +51,11 @@ body {
     z-index: 1000;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: flex-start;
     padding: 1rem;
+    gap: 10px;
 }
+
 .header-panel {
     pointer-events: auto;
     background: var(--panel-bg);
@@ -60,12 +67,33 @@ body {
     border: 1px solid var(--border-color);
     border-left: 5px solid var(--primary-color);
 }
+
 .header-top {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 0.8rem;
 }
+
+.search-panel {
+    pointer-events: auto;
+    background: var(--panel-bg);
+    padding: 0.8rem;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(8px);
+    max-width: 400px;
+    border: 1px solid var(--border-color);
+    margin-top: 0;
+}
+
+.header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.8rem;
+}
+
 h1 {
     font-size: 1.4rem;
     font-weight: 800;
@@ -75,15 +103,18 @@ h1 {
     align-items: center;
     gap: 10px;
 }
+
 h1 img.logo {
     width: 28px;
     height: 28px;
     object-fit: contain;
 }
+
 .controls {
     display: flex;
     gap: 0.5rem;
 }
+
 button {
     background: var(--bg-color);
     border: 1px solid var(--border-color);
@@ -96,16 +127,19 @@ button {
     transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
+
 button:hover {
     background: var(--border-color);
     transform: translateY(-1px);
 }
+
 button.active {
     background: var(--primary-color);
     color: white;
     border-color: var(--primary-color);
     box-shadow: 0 2px 4px rgba(229, 42, 18, 0.3);
 }
+
 .status-bar {
     margin-top: 0.8rem;
     font-size: 0.85rem;
@@ -118,6 +152,108 @@ button.active {
     padding: 4px 8px;
     border-radius: 4px;
 }
+
+.search-panel {
+    pointer-events: auto;
+    background: var(--panel-bg);
+    padding: 0.8rem;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(8px);
+    max-width: 400px;
+    border: 1px solid var(--border-color);
+    margin-top: 0;
+}
+
+.search-container {
+    position: relative;
+    width: 100%;
+}
+
+.search-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-family: var(--font-family);
+    background: var(--bg-color);
+    color: var(--text-color);
+    transition: all 0.2s;
+    outline: none;
+}
+
+.search-input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(229, 42, 18, 0.1);
+}
+
+.search-input::placeholder {
+    color: var(--secondary-color);
+    opacity: 0.6;
+}
+
+.search-results {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    left: 0;
+    right: 0;
+    background: var(--panel-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 1000;
+    display: none;
+}
+
+.search-results.visible {
+    display: block;
+}
+
+.search-result-item {
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    transition: background-color 0.15s;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.search-result-item:last-child {
+    border-bottom: none;
+}
+
+.search-result-item:hover {
+    background: rgba(229, 42, 18, 0.05);
+}
+
+.search-result-item .station-icon-small {
+    width: 16px;
+    height: 16px;
+    background: #fff;
+    border: 1.5px solid #97999B;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.search-result-item .station-icon-small img {
+    width: 10px;
+    height: 10px;
+    object-fit: contain;
+}
+
+.search-result-item .station-name {
+    font-size: 0.95rem;
+    color: var(--text-color);
+    font-weight: 500;
+}
+
 .layer-toggle-btn {
     position: fixed;
     top: 20px;
@@ -137,15 +273,18 @@ button.active {
     transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
     padding: 0;
 }
+
 .layer-toggle-btn:hover {
     background: var(--primary-color);
     color: white;
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(229, 42, 18, 0.3);
 }
+
 .layer-toggle-btn svg {
     pointer-events: none;
 }
+
 .info-panel {
     position: fixed;
     top: 20px;
@@ -163,9 +302,11 @@ button.active {
     transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     overflow: hidden;
 }
+
 .info-panel.visible {
     transform: translateX(0);
 }
+
 .panel-header {
     padding: 1rem;
     background: var(--bg-color);
@@ -174,16 +315,19 @@ button.active {
     justify-content: space-between;
     align-items: flex-start;
 }
+
 .panel-title h2 {
     font-size: 1.2rem;
     color: var(--primary-color);
     margin-bottom: 4px;
 }
+
 .panel-title p {
     font-size: 0.9rem;
     color: var(--text-color);
     opacity: 0.7;
 }
+
 .close-btn {
     background: transparent;
     border: none;
@@ -195,36 +339,71 @@ button.active {
     opacity: 0.5;
     box-shadow: none;
 }
+
 .close-btn:hover {
     background: transparent;
     opacity: 1;
     color: var(--primary-color);
     transform: none;
 }
+
 .panel-content {
     padding: 1rem;
     overflow-y: auto;
     flex: 1;
 }
+
 .station-list-item {
     display: flex;
     padding: 10px 0;
     border-bottom: 1px solid var(--border-color);
     transition: background-color 0.2s;
 }
+
 .station-list-item:last-child {
     border-bottom: none;
 }
+
 .station-time {
     font-family: 'Roboto Mono', monospace;
     color: var(--text-color);
     font-weight: 600;
     margin-left: auto;
 }
+
 .train-marker {
     transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
 }
+
+.station-icon {
+    width: 20px;
+    height: 20px;
+    background: #fff;
+    border: 2px solid #97999B;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.station-icon:hover {
+    transform: scale(1.15);
+    border-color: var(--primary-color);
+    box-shadow: 0 3px 10px rgba(229, 42, 18, 0.3);
+    z-index: 1000;
+}
+
+.station-icon img {
+    width: 13px;
+    height: 13px;
+    object-fit: contain;
+    pointer-events: none;
+}
+
 #loading-screen {
     position: fixed;
     top: 0;
@@ -239,16 +418,19 @@ button.active {
     justify-content: center;
     transition: opacity 0.5s;
 }
+
 #loading-screen img {
     width: 120px;
     height: 120px;
     margin-bottom: 1rem;
 }
+
 #loading-screen h2 {
     color: var(--text-color);
     font-size: 1.2rem;
     font-weight: 600;
 }
+
 @media (max-width: 768px) {
     .header-panel {
         width: 100%;
@@ -258,9 +440,19 @@ button.active {
         border-bottom: 4px solid var(--primary-color);
         padding: 0.8rem;
     }
+
+    .search-panel {
+        width: calc(100% - 55px);
+        max-width: none;
+        border-radius: 12px;
+        margin-top: 5px;
+        padding: 0.6rem;
+    }
+
     h1 {
         font-size: 1.2rem;
     }
+
     .layer-toggle-btn {
         top: auto;
         bottom: auto;
@@ -269,8 +461,10 @@ button.active {
         width: 44px;
         height: 44px;
         position: absolute;
-        top: 110px;
+        top: 135px;
+        /* Aligned with search bar */
     }
+
     .info-panel {
         top: auto;
         bottom: 0;
@@ -284,13 +478,16 @@ button.active {
         box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.2);
         padding-bottom: 20px;
     }
+
     .info-panel.visible {
         transform: translateY(0);
     }
+
     .leaflet-bottom.leaflet-right {
         bottom: 20px;
         transition: bottom 0.3s;
     }
+
     body.panel-open .leaflet-bottom.leaflet-right {
         bottom: calc(40vh + 140px);
     }

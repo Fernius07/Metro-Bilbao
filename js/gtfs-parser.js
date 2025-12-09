@@ -122,6 +122,8 @@ class GTFSParser {
             });
         });
         const stopTimesByTrip = new Map();
+        this.processed.stopUsageCounts = new Map();
+
         this.data.stop_times.forEach(st => {
             if (!stopTimesByTrip.has(st.trip_id)) stopTimesByTrip.set(st.trip_id, []);
             stopTimesByTrip.get(st.trip_id).push({
@@ -131,6 +133,9 @@ class GTFSParser {
                 departure: this.parseTime(st.departure_time),
                 shape_dist: st.shape_dist_traveled ? parseFloat(st.shape_dist_traveled) : null
             });
+
+            const currentCount = this.processed.stopUsageCounts.get(st.stop_id) || 0;
+            this.processed.stopUsageCounts.set(st.stop_id, currentCount + 1);
         });
         stopTimesByTrip.forEach(times => times.sort((a, b) => a.seq - b.seq));
         this.data.trips.forEach(trip => {

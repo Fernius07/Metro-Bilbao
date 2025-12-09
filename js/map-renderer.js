@@ -270,11 +270,11 @@ class MapRenderer {
         }
         const result = this.simulator.getUpcomingTrainsForStation(stopId, this.currentTime, 45);
         this.updateStationPanelContent(stopId, stopName, result);
-        this.openInfoPanel(stopName, 'Próximas salidas', this.renderStationContent(result), 'station', stopId);
+        this.openInfoPanel(stopName, 'Próximos trenes', this.renderStationContent(result), 'station', stopId);
     }
     renderStationContent(result) {
         if (result.trains.length === 0) {
-            return '<div style="padding: 2rem; text-align: center; color: #999;">No hay trenes próximos en los siguientes 45 min.</div>';
+            return '<div style="padding: 2rem; text-align: center; color: #999;">No hay trenes próximos en los próximos minutos.</div>';
         }
         let content = '<div class="station-list">';
         const trainsToShow = result.trains.slice(0, 10);

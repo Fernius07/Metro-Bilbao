@@ -89,9 +89,8 @@
         this.activeTrains = newPositions;
         return Array.from(this.activeTrains.values());
     }
-    syncWithRealTime(apiData) {
+    syncWithRealTime(apiData, now = new Date()) {
         if (!apiData) return;
-        const now = new Date();
         const secondsFromMidnight = this.getSecondsFromMidnight(now);
         for (const [tripId, trainHelper] of this.activeTrains) {
             const trip = this.gtfs.tripsById.get(tripId);

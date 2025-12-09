@@ -14,6 +14,14 @@ class App {
         this.lastUpdate = 0;
         this.lastApiSync = 0;
     }
+    getBilbaoTime() {
+        // Returns a Date object that "looks" like Bilbao time in local getters
+        // e.g. if it's 12:00 in Bilbao, this Date object will return 12 for getHours()
+        // regardless of the browser's actual timezone.
+        const now = new Date();
+        const bilbaoString = now.toLocaleString("en-US", { timeZone: "Europe/Madrid" });
+        return new Date(bilbaoString);
+    }
     async init() {
         try {
             this.renderer = new MapRenderer('map', this.lang);
@@ -42,7 +50,9 @@ class App {
             this.lastApiSync = timestamp;
             this.api.fetchAll().then(data => {
                 if (this.simulator) {
-                    this.simulator.syncWithRealTime(data);
+                    // Pass current Bilbao time to sync
+                    const bilbaoNow = this.getBilbaoTime();
+                    this.simulator.syncWithRealTime(data, bilbaoNow);
                     this.updateRealTimeStatus(true);
                 }
             }).catch(() => {
@@ -50,8 +60,8 @@ class App {
             });
         }
         if (timestamp - this.lastUpdate > CONFIG.UPDATE_INTERVAL_MS) {
-            const now = new Date();
-            this.renderer.setCurrentTime(now); 
+            const now = this.getBilbaoTime();
+            this.renderer.setCurrentTime(now);
             if (this.simulator) {
                 const trains = this.simulator.update(now);
                 this.renderer.updateTrains(trains.filter(t => t));

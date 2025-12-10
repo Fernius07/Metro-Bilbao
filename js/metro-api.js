@@ -1,4 +1,8 @@
 ﻿import CONFIG from './config.js';
+/**
+ * Clase para gestionar la comunicación con la API de tiempo real de Metro Bilbao.
+ * Implementa caché y limitación de frecuencia para optimizar las peticiones.
+ */
 class MetroAPI {
     constructor() {
         this.cache = new Map();
@@ -7,9 +11,16 @@ class MetroAPI {
         this.stationCodes = new Map();
         this.apiUrl = CONFIG.API_URL;
     }
+
     setStationCodes(codesMap) {
         this.stationCodes = codesMap;
     }
+
+    /**
+     * Obtiene los datos de llegada para una estación específica.
+     * @param {string} stationCode - Código de la estación (ej. 'BIZ').
+     * @returns {Promise<Array|null>} Lista de trenes o null si hay error.
+     */
     async fetchStation(stationCode) {
         if (!stationCode) return null;
         try {
@@ -27,12 +38,17 @@ class MetroAPI {
             return null;
         }
     }
+    /**
+     * Sincroniza todas las estaciones activas con la API en tiempo real.
+     * Realiza peticiones en lotes (chunks) para no saturar el navegador ni la API.
+     * @returns {Promise<Map>} Mapa con los datos actualizados de las estaciones.
+     */
     async fetchAll() {
         const now = Date.now();
         if (now - this.lastUpdate < this.updateInterval) {
             return this.cache;
         }
-        console.log('🔄 Syncing with Real-Time API...');
+        console.log('🔄 Sincronizando con API en tiempo real...');
         const uniqueCodes = Array.from(new Set(this.stationCodes.values()));
         const chunkCheck = async (code) => {
             const data = await this.fetchStation(code);
@@ -47,7 +63,7 @@ class MetroAPI {
         }
         this.lastUpdate = now;
         const totalTrains = Array.from(this.cache.values()).reduce((sum, trains) => sum + (trains?.length || 0), 0);
-        console.log(`✅ Synced ${this.cache.size} stations with ${totalTrains} total trains`);
+        console.log(`✅ Sincronizadas ${this.cache.size} estaciones con ${totalTrains} trenes totales`);
         return this.cache;
     }
     getStationData(gtfsStopId) {

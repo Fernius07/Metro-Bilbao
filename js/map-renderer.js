@@ -1,5 +1,9 @@
 ﻿import CONFIG from './config.js';
 import i18n from './i18n.js';
+/**
+ * Clase responsable de renderizar el mapa, las capas y los elementos interactivos.
+ * Gestiona marcadores de trenes, estaciones, políneas de rutas y paneles de información.
+ */
 class MapRenderer {
     constructor(containerId, language = 'es') {
         this.language = language;
@@ -70,6 +74,10 @@ class MapRenderer {
             this.map.addLayer(this.layers.base.standard);
         }
     }
+    /**
+     * Renderiza los elementos estáticos del GTFS: formas (rutas) y paradas.
+     * @param {Object} processedData - Datos GTFS procesados.
+     */
     renderStaticData(processedData) {
         this.routesById = processedData.routesById;
         this.shapesById = processedData.shapesById;
@@ -125,6 +133,11 @@ class MapRenderer {
         }
         return 'L1';
     }
+    /**
+     * Actualiza la posición y visualización de los trenes en el mapa.
+     * Gestiona la creación, movimiento y eliminación de marcadores de tren.
+     * @param {Array} trains - Lista de objetos de tren actualizados.
+     */
     updateTrains(trains) {
         const activeIds = new Set(trains.map(t => t.trip_id));
         for (const [id, marker] of this.trainMarkers) {
@@ -144,7 +157,7 @@ class MapRenderer {
             const isSelected = this.activePanel && this.activePanel.type === 'train' && this.activePanel.id === train.trip_id;
             const radius = isSelected ? 12 : 7;
 
-            // Handle map following
+            // Gestionar seguimiento del mapa (Follow Train)
             if (this.followedTrainId === train.trip_id) {
                 this.map.panTo([train.lat, train.lon], { animate: true, duration: 0.5 });
             }
@@ -193,6 +206,9 @@ class MapRenderer {
             }
         });
     }
+    /**
+     * Muestra el panel lateral con información.
+     */
     openInfoPanel(title, subtitle, contentHtml, type, id) {
         if (!this.panelElement) return;
         this.panelTitle.textContent = title;
@@ -209,17 +225,25 @@ class MapRenderer {
         document.body.classList.add('panel-open');
         this.activePanel = { type, id };
     }
+
+    /**
+     * Cierra el panel lateral.
+     */
     closeInfoPanel() {
         if (!this.panelElement) return;
         this.panelElement.classList.remove('visible');
         document.body.classList.remove('panel-open');
         this.activePanel = null;
     }
+    /**
+     * Activa el seguimiento de un tren y muestra su información detallada.
+     */
     showTrainPanel(train) {
         this.followedTrainId = train.trip_id;
         const lineNumber = this.getLineNumber(train.destination_name);
         this.updateTrainPanelContent(train);
     }
+
     updateTrainPanelContent(train) {
         const lineNumber = this.getLineNumber(train.destination_name);
         const title = `${lineNumber} | ${train.destination_name}`;
@@ -282,6 +306,7 @@ class MapRenderer {
             }, 100);
         }
     }
+
     showStationPanel(stopId, stopName) {
         if (!this.simulator || !this.currentTime || !this.gtfsData) {
             return;
@@ -290,6 +315,11 @@ class MapRenderer {
         this.updateStationPanelContent(stopId, stopName, result);
         this.openInfoPanel(stopName, 'Próximos trenes', this.renderStationContent(result), 'station', stopId);
     }
+
+    /**
+     * Genera el HTML para el panel de información de una estación.
+     * Muestra la lista de próximos trenes.
+     */
     renderStationContent(result) {
         if (result.trains.length === 0) {
             return '<div style="padding: 2rem; text-align: center; color: #999;">No hay trenes próximos en los próximos minutos.</div>';
@@ -394,6 +424,10 @@ class MapRenderer {
         });
     }
 
+    /**
+     * Realiza la búsqueda de estaciones por nombre.
+     * Ordena resultados por uso (popularidad) y luego alfabéticamente.
+     */
     performSearch(query) {
         if (!this.gtfsData || !this.gtfsData.stopsById) return;
 

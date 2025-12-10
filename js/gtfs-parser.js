@@ -1,4 +1,8 @@
 ﻿import CONFIG from './config.js';
+/**
+ * Clase encargada de leer, analizar y procesar los archivos GTFS raw.
+ * Transforma los archivos CSV en estructuras de datos optimizadas para el uso en memoria.
+ */
 class GTFSParser {
     constructor() {
         this.data = {
@@ -21,6 +25,11 @@ class GTFSParser {
             calendar_dates: []
         };
     }
+
+    /**
+     * Carga todos los archivos GTFS necesarios en paralelo.
+     * @returns {Promise<Object>} Promesa que resuelve con los datos procesados.
+     */
     async loadAll() {
         const files = [
             'agency.txt', 'stops.txt', 'routes.txt', 'trips.txt',
@@ -36,6 +45,10 @@ class GTFSParser {
         this.processData();
         return this.processed;
     }
+    /**
+     * Descarga y analiza un archivo CSV individual.
+     * @param {string} filename - Nombre del archivo a cargar (ej. 'stops.txt').
+     */
     async fetchAndParse(filename) {
         try {
             const response = await fetch(`${CONFIG.GTFS_FOLDER}${filename}`);
@@ -43,13 +56,20 @@ class GTFSParser {
             const text = await response.text();
             const name = filename.replace('.txt', '');
             this.data[name] = this.parseCSV(text);
-            console.log(`Loaded ${filename}: ${this.data[name].length} records`);
+            console.log(`Cargado ${filename}: ${this.data[name].length} registros`);
         } catch (e) {
-            console.warn(`Could not load ${filename}:`, e);
+            console.warn(`No se pudo cargar ${filename}:`, e);
             const name = filename.replace('.txt', '');
             this.data[name] = [];
         }
     }
+
+    /**
+     * Convierte contenido CSV crudo en un array de objetos.
+     * Maneja comillas y limpieza de espacios.
+     * @param {string} text - Contenido RAW del archivo CSV.
+     * @returns {Array<Object>} Array de objetos con las columnas como claves.
+     */
     parseCSV(text) {
         if (!text || !text.trim()) return [];
         const lines = text.split(/\r?\n/).filter(l => l.trim());
@@ -69,6 +89,10 @@ class GTFSParser {
         }
         return result;
     }
+    /**
+     * Procesa los datos raw para generar estructuras optimizadas.
+     * Crea mapas de búsqueda rápida por ID y ordena secuencias de paradas y formas.
+     */
     processData() {
         console.time('GTFS Processing');
         this.processed.stationCodes = new Map();
@@ -167,6 +191,12 @@ class GTFSParser {
         this.processed.calendar_dates = this.data.calendar_dates || [];
         console.timeEnd('GTFS Processing');
     }
+    /**
+     * Calcula la distancia en metros entre dos coordenadas geográficas utilizando la fórmula de Haversine.
+     * @param {Object} p1 - Punto 1 {lat, lon}.
+     * @param {Object} p2 - Punto 2 {lat, lon}.
+     * @returns {number} Distancia en metros.
+     */
     haversine(p1, p2) {
         const R = 6371e3;
         const φ1 = p1.lat * Math.PI / 180;
@@ -179,6 +209,13 @@ class GTFSParser {
         const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         return R * c;
     }
+
+    /**
+     * Proyecta las paradas en la forma (shape) para determinar la distancia recorrida a lo largo de la ruta.
+     * Esencial para interpolar la posición del tren basándose en la distancia y no solo en el tiempo.
+     * @param {Array} stopTimes - Array de horarios de parada.
+     * @param {Object} shape - Objeto shape procesado.
+     */
     projectStopsOntoShape(stopTimes, shape) {
         stopTimes.forEach(st => {
             if (st.shape_dist !== null) return;
@@ -196,6 +233,12 @@ class GTFSParser {
             st.shape_dist = closestShapeDist;
         });
     }
+
+    /**
+     * Convierte una cadena de tiempo 'HH:MM:SS' a segundos totales desde la medianoche.
+     * @param {string} timeStr - Hora en formato texto.
+     * @returns {number} Segundos desde medianoche.
+     */
     parseTime(timeStr) {
         if (!timeStr) return 0;
         const parts = timeStr.split(':').map(Number);

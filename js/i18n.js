@@ -1,4 +1,7 @@
-﻿const i18n = {
+﻿/**
+ * Recurso de internacionalización con textos en Español y Euskera.
+ */
+const i18n = {
     es: {
         title: "Metro Bilbao - Tiempo Real",
         loading: "Cargando sistema...",

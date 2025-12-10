@@ -4,6 +4,10 @@ import MapRenderer from './map-renderer.js';
 import TrainSimulator from './trains-simulator.js';
 import CONFIG from './config.js';
 import i18n from './i18n.js';
+/**
+ * Clase principal que gestiona la inicialización y el bucle principal de la aplicación.
+ * Coordina la carga de datos, el renderizado del mapa y la simulación de trenes.
+ */
 class App {
     constructor() {
         this.lang = CONFIG.DEFAULT_LANGUAGE;
@@ -14,14 +18,22 @@ class App {
         this.lastUpdate = 0;
         this.lastApiSync = 0;
     }
+
+    /**
+     * Devuelve un objeto Date que "parece" ser la hora de Bilbao en los getters locales.
+     * Por ejemplo, si son las 12:00 en Bilbao, este objeto devolverá 12 para getHours(),
+     * independientemente de la zona horaria real del navegador.
+     * @returns {Date} Fecha ajustada a la zona horaria de Bilbao (Europa/Madrid).
+     */
     getBilbaoTime() {
-        // Returns a Date object that "looks" like Bilbao time in local getters
-        // e.g. if it's 12:00 in Bilbao, this Date object will return 12 for getHours()
-        // regardless of the browser's actual timezone.
         const now = new Date();
         const bilbaoString = now.toLocaleString("en-US", { timeZone: "Europe/Madrid" });
         return new Date(bilbaoString);
     }
+    /**
+     * Inicializa la aplicación.
+     * Carga los datos GTFS, configura el mapa y el simulador, y elimina la pantalla de carga.
+     */
     async init() {
         try {
             this.renderer = new MapRenderer('map', this.lang);
@@ -45,12 +57,17 @@ class App {
         }
         this.setupEventListeners();
     }
+    /**
+     * Bucle principal de la aplicación.
+     * Sincroniza con la API en tiempo real y actualiza la posición de los trenes en cada frame.
+     * @param {number} timestamp - Marca de tiempo proporcionada por requestAnimationFrame.
+     */
     async loop(timestamp) {
         if (!this.lastApiSync || timestamp - this.lastApiSync > 10000) {
             this.lastApiSync = timestamp;
             this.api.fetchAll().then(data => {
                 if (this.simulator) {
-                    // Pass current Bilbao time to sync
+                    // Pasar la hora actual de Bilbao para sincronizar
                     const bilbaoNow = this.getBilbaoTime();
                     this.simulator.syncWithRealTime(data, bilbaoNow);
                     this.updateRealTimeStatus(true);
@@ -74,6 +91,11 @@ class App {
         }
         requestAnimationFrame((t) => this.loop(t));
     }
+
+    /**
+     * Actualiza el indicador visual del estado de la conexión en tiempo real.
+     * @param {boolean} active - true si la conexión está activa, false si hay error.
+     */
     updateRealTimeStatus(active) {
         const dot = document.getElementById('rt-status');
         if (dot) {

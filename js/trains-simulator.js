@@ -1,12 +1,22 @@
-﻿class TrainSimulator {
+﻿/**
+ * Motor de simulación que calcula la posición exacta de los trenes.
+ * Combina los horarios estáticos (GTFS) con ajustes dinámicos basados en datos en tiempo real.
+ */
+class TrainSimulator {
     constructor(gtfsData, stationCodes) {
         this.gtfs = gtfsData;
         this.activeTrains = new Map();
         this.stationCodes = stationCodes || new Map();
         this.realTimeOffsets = new Map();
         this.trainLengths = new Map();
-        this.tripStates = new Map(); // Tracks last time/state for smoothing
+        this.tripStates = new Map(); // Rastrea último tiempo/estado para suavizado
     }
+    /**
+     * Calcula las nuevas posiciones de todos los trenes activos para el instante actual.
+     * Aplica lógica de suavizado para evitar saltos bruscos cuando el "offset" de tiempo real cambia.
+     * @param {Date} now - Hora actual de la simulación.
+     * @returns {Array} Lista de trenes con sus coordenadas y metadatos actualizados.
+     */
     update(now) {
         const secondsFromMidnight = this.getSecondsFromMidnight(now);
         const dateStr = this.getDateString(now);
@@ -25,7 +35,7 @@
         }
         const currentTimestamp = now.getTime();
 
-        // Clean up old trip states
+        // Limpiar estados de viajes antiguos
         const activeTripIds = new Set(currentTrips.map(t => t.id));
         for (const id of this.tripStates.keys()) {
             if (!activeTripIds.has(id)) {
@@ -38,22 +48,22 @@
             const offset = this.realTimeOffsets.get(trip.id) || 0;
             const targetAdjustedTime = secondsFromMidnight - offset;
 
-            // Time Smoothing Logic
+            // Lógica de Suavizado de Tiempo (Time Smoothing)
             let finalTime = targetAdjustedTime;
 
             if (this.tripStates.has(trip.id)) {
                 const state = this.tripStates.get(trip.id);
-                const timeSinceLastUpdate = (currentTimestamp - state.lastWallClock) / 1000; // seconds
+                const timeSinceLastUpdate = (currentTimestamp - state.lastWallClock) / 1000; // segundos
 
-                // Determine allowed speed range
+                // Determinar rango de velocidad permitido
                 let minSpeed = 0.0;
-                // If we were moving, don't stop completely (maintain 20% speed)
+                // Si nos estábamos moviendo, no parar completamente (mantener 20% velocidad)
                 // "No quiero que se queden parados si no son en las estaciones"
                 if (state.status === 'moving') {
                     minSpeed = 0.2;
                 }
 
-                // Allow catching up up to 3x speed
+                // Permitir recuperar tiempo hasta 3x velocidad
                 const maxSpeed = 3.0;
 
                 const minAdvance = timeSinceLastUpdate * minSpeed;
@@ -62,7 +72,7 @@
                 const rawDiff = targetAdjustedTime - state.lastAdjustedTime;
                 let validAdvance = rawDiff;
 
-                // Clamp the advance between min and max allowed movement
+                // Limitar el avance entre el mínimo y máximo movimiento permitido
                 if (validAdvance < minAdvance) {
                     validAdvance = minAdvance;
                 } else if (validAdvance > maxAdvance) {
@@ -74,7 +84,7 @@
 
             const position = this.calculateTrainPosition(trip, finalTime);
 
-            // Store state for next frame
+            // Guardar estado para el siguiente frame
             this.tripStates.set(trip.id, {
                 lastAdjustedTime: finalTime,
                 lastWallClock: currentTimestamp,
@@ -89,6 +99,12 @@
         this.activeTrains = newPositions;
         return Array.from(this.activeTrains.values());
     }
+    /**
+     * Ajusta las posiciones de los trenes basándose en datos de la API real.
+     * Busca coincidencias entre la próxima parada esperada y los datos de llegada de la API.
+     * @param {Map} apiData - Datos de la API indexados por código de estación.
+     * @param {Date} now - Hora actual.
+     */
     syncWithRealTime(apiData, now = new Date()) {
         if (!apiData) return;
         const secondsFromMidnight = this.getSecondsFromMidnight(now);
@@ -140,6 +156,13 @@
             }
         }
     }
+
+    /**
+     * Comprueba si el destino de la API coincide con el destino GTFS (lógica difusa).
+     * @param {string} apiDest - Destino según API.
+     * @param {string} gtfsDest - Destino según GTFS.
+     * @returns {boolean} true si coinciden.
+     */
     matchesDestination(apiDest, gtfsDest) {
         if (!apiDest || !gtfsDest) return false;
         const normApi = apiDest.toLowerCase().replace('/', ' ');
@@ -151,6 +174,11 @@
         if (normApi.includes('plentzia') && normGtfs.includes('plentzia')) return true;
         return false;
     }
+
+    /**
+     * Determina qué servicios están activos para una fecha y día determinados.
+     * Tiene en cuenta excepciones y calendarios (calendar.txt y calendar_dates.txt).
+     */
     getActiveServices(dateStr, dayOfWeek) {
         const active = new Set();
         const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
@@ -172,6 +200,12 @@
         }
         return active;
     }
+    /**
+     * Interpola la posición del tren entre dos paradas basándose en el tiempo actual.
+     * @param {Object} trip - Objeto del viaje.
+     * @param {number} time - Tiempo ajustado (segundos desde medianoche).
+     * @returns {Object|null} Posición calculada o null si no está en servicio.
+     */
     calculateTrainPosition(trip, time) {
         const stopTimes = trip.stop_times;
         let prevStop = null;
@@ -283,6 +317,13 @@
         const d = String(date.getDate()).padStart(2, '0');
         return `${y}${m}${d}`;
     }
+    /**
+     * Obtiene los próximos trenes para una estación específica dentro de una ventana de tiempo.
+     * @param {string} stopId - ID de la parada.
+     * @param {Date} now - Hora actual.
+     * @param {number} windowMinutes - Minutos a buscar en el futuro (default 45).
+     * @returns {Object} { trains: [], is_terminal: boolean }
+     */
     getUpcomingTrainsForStation(stopId, now, windowMinutes = 45) {
         const secondsFromMidnight = this.getSecondsFromMidnight(now);
         const dateStr = this.getDateString(now);

@@ -48,6 +48,11 @@ class MapRenderer {
         this.searchInput = document.getElementById('station-search');
         this.searchResults = document.getElementById('search-results');
         this.setupSearch();
+
+        this.followedTrainId = null;
+        this.map.on('dragstart', () => {
+            this.followedTrainId = null;
+        });
     }
     setTheme(theme) {
         if (theme === 'dark') {
@@ -129,17 +134,29 @@ class MapRenderer {
                 if (this.activePanel && this.activePanel.type === 'train' && this.activePanel.id === id) {
                     this.closeInfoPanel();
                 }
+                if (this.followedTrainId === id) {
+                    this.followedTrainId = null;
+                }
             }
         }
 
         trains.forEach(train => {
+            const isSelected = this.activePanel && this.activePanel.type === 'train' && this.activePanel.id === train.trip_id;
+            const radius = isSelected ? 12 : 7;
+
+            // Handle map following
+            if (this.followedTrainId === train.trip_id) {
+                this.map.panTo([train.lat, train.lon], { animate: true, duration: 0.5 });
+            }
+
             if (this.trainMarkers.has(train.trip_id)) {
                 const marker = this.trainMarkers.get(train.trip_id);
                 marker.setLatLng([train.lat, train.lon]);
+                marker.setRadius(radius);
                 const lineNumber = this.getLineNumber(train.destination_name);
                 marker.setTooltipContent(`${lineNumber} | ${train.destination_name || '...'}`);
                 marker.trainData = train;
-                if (this.activePanel && this.activePanel.type === 'train' && this.activePanel.id === train.trip_id) {
+                if (isSelected) {
                     this.updateTrainPanelContent(train);
                 }
             } else {
@@ -152,7 +169,7 @@ class MapRenderer {
                     color = '#000000';
                 }
                 const marker = L.circleMarker([train.lat, train.lon], {
-                    radius: 7,
+                    radius: radius,
                     fillColor: color,
                     color: '#fff',
                     weight: 2,
@@ -199,6 +216,7 @@ class MapRenderer {
         this.activePanel = null;
     }
     showTrainPanel(train) {
+        this.followedTrainId = train.trip_id;
         const lineNumber = this.getLineNumber(train.destination_name);
         this.updateTrainPanelContent(train);
     }

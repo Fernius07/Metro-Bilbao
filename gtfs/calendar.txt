@@ -1,7 +1,5 @@
 service_id,monday,tuesday,wednesday,thursday,friday,saturday,sunday,start_date,end_date
-invl_25.pex,1,1,0,0,0,0,0,20251203,20260103
-fu1900hobralut_bolvia1_invl_25.pex,0,0,1,0,0,0,0,20251203,20260103
-obralut_bolvia1_invl_25.pex,0,0,0,1,0,0,0,20251203,20260103
-sempascnavinvv_25.pex,0,0,0,0,1,0,0,20251203,20260103
-invs_25.pex,0,0,0,0,0,1,0,20251203,20260103
-invd_25.pex,0,0,0,0,0,0,1,20251203,20260103
+invl_25.pex,1,1,1,1,0,0,0,20251213,20260113
+sempascnavinvv_25.pex,0,0,0,0,1,0,0,20251213,20260113
+invs_25.pex,0,0,0,0,0,1,0,20251213,20260113
+invd_25.pex,0,0,0,0,0,0,1,20251213,20260113

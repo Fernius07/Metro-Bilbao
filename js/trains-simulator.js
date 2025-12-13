@@ -57,10 +57,12 @@ class TrainSimulator {
 
                 // Determinar rango de velocidad permitido
                 let minSpeed = 0.0;
-                // Si nos estábamos moviendo, no parar completamente (mantener 20% velocidad)
-                // "No quiero que se queden parados si no son en las estaciones"
+
+                // Si el tren está en movimiento (entre estaciones), forzar una velocidad mínima
+                // para que no se quede "congelado" en medio de la vía si el retraso aumenta.
+                // Pero si está en estación ('dwelling'), permitimos velocidad 0 para que espere.
                 if (state.status === 'moving') {
-                    minSpeed = 0.2;
+                    minSpeed = 0.5; // Forzar al menos 50% de velocidad real para llegar a la estación
                 }
 
                 // Permitir recuperar tiempo hasta 3x velocidad
@@ -79,6 +81,24 @@ class TrainSimulator {
                     validAdvance = maxAdvance;
                 }
 
+                // IMPORTANTE: Si estamos forzando avance (validAdvance > rawDiff),
+                // asegurarnos de no pasarnos de la llegada a la siguiente estación
+                // si se supone que debemos esperar allí.
+                if (state.status === 'moving' && state.next_stop_arrival) {
+                    // Calcular tiempo máximo permitido (llegada a la siguiente parada)
+                    // Añadimos un pequeño margen (e.g. 1 seg) para asegurar que llegue al estado 'dwelling'
+                    const maxTime = state.next_stop_arrival;
+                    if (state.lastAdjustedTime + validAdvance > maxTime) {
+                        // Si forzar la velocidad nos pasaría de la estación, 
+                        // limitamos el avance justo hasta la llegada.
+                        // Esto hará que en el siguiente frame entre en 'dwelling' y pueda esperar.
+                        const timeToStation = maxTime - state.lastAdjustedTime;
+                        if (timeToStation >= 0) {
+                            validAdvance = timeToStation;
+                        }
+                    }
+                }
+
                 finalTime = state.lastAdjustedTime + validAdvance;
             }
 
@@ -88,7 +108,8 @@ class TrainSimulator {
             this.tripStates.set(trip.id, {
                 lastAdjustedTime: finalTime,
                 lastWallClock: currentTimestamp,
-                status: position ? position.status : 'moving'
+                status: position ? position.status : 'moving',
+                next_stop_arrival: position ? position.next_stop_arrival : null
             });
 
             if (position) {

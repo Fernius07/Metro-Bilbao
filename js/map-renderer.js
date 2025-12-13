@@ -253,7 +253,9 @@ class MapRenderer {
         const currentTime = this.currentTime ? this.getSecondsFromMidnight(this.currentTime) : 0;
         let nextStopIndex = 0;
         for (let i = 0; i < trip.stop_times.length; i++) {
-            if (trip.stop_times[i].arrival > currentTime) {
+            const delay = train.delay || 0;
+            // Usar la hora ajustada (horario + retraso) para determinar si ya pasamos la estación
+            if (trip.stop_times[i].arrival + delay > currentTime) {
                 nextStopIndex = i;
                 break;
             }

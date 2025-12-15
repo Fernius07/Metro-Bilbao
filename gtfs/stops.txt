@@ -1,6 +1,4 @@
 stop_id,stop_code,stop_name,stop_lat,stop_lon,zone_id,location_type,parent_station
-41,,Santurtzi,  43.32895,  -3.03421,B2,1,
-6,,Zazpikaleak/Casco Viejo,  43.25968,  -2.92071,A,1,
 16,,Astrabudua,  43.31463,  -2.98681,B1,1,
 25,,Ibarbengoa,  43.36320,  -3.00699,B1,1,
 32,,Gurutzeta/Cruces,  43.28301,  -2.98245,B2,1,
@@ -27,7 +25,9 @@ stop_id,stop_code,stop_name,stop_lat,stop_lon,zone_id,location_type,parent_stati
 5,,Santutxu,  43.25430,  -2.91335,A,1,
 9,,Indautxu,  43.26127,  -2.94179,A,1,
 13,,San Ignazio,  43.28068,  -2.96239,A,1,
+41,,Santurtzi,  43.32895,  -3.03421,B2,1,
 14,,Lutxana,  43.29098,  -2.96992,B1,1,
+6,,Zazpikaleak/Casco Viejo,  43.25968,  -2.92071,A,1,
 20,,Gobela,  43.33308,  -3.00735,B1,1,
 22,,Aiboa,  43.34414,  -3.00267,B1,1,
 27,,Larrabasterra,  43.37573,  -2.99147,C,1,

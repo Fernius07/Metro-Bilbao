@@ -4,13 +4,20 @@ import zipfile
 import io
 import shutil
 import ssl
-from convert_gtfs_to_json import GTFSConverter
+import tempfile
+from selective_gtfs_converter import SelectiveGTFSConverter
 
 GTFS_URL = "https://cms.metrobilbao.eus/get/open_data/horarios/es"
 GTFS_DIR = "gtfs"
 
+# Files that change daily (schedules)
+DYNAMIC_FILES = ['stop_times.txt', 'calendar.txt', 'calendar_dates.txt', 'trips.txt']
+
+# Files that are static (geometry and configuration)
+STATIC_FILES = ['stops.txt', 'shapes.txt', 'routes.txt', 'agency.txt']
+
 def update_gtfs():
-    print("🚀 Starting GTFS update process...")
+    print("🚀 Starting GTFS selective update process...")
 
     # 1. Download ZIP
     print(f"⬇️  Downloading GTFS data from {GTFS_URL}...")
@@ -31,28 +38,61 @@ def update_gtfs():
         print(f"❌ Error downloading GTFS data: {e}")
         return False
 
-    # 2. Extract ZIP
-    print(f"📂 Extracting files to {GTFS_DIR}/...")
+    # 2. Extract ZIP to temporary directory
+    print(f"📂 Extracting files to temporary directory...")
     try:
         os.makedirs(GTFS_DIR, exist_ok=True)
         
-        # Clear existing txt files
-        for file in os.listdir(GTFS_DIR):
-            if file.endswith(".txt"):
-                os.remove(os.path.join(GTFS_DIR, file))
-
-        with zipfile.ZipFile(io.BytesIO(data)) as z:
-            z.extractall(GTFS_DIR)
-        print("✓ Extraction successful")
+        # Create temporary directory for extraction
+        with tempfile.TemporaryDirectory() as temp_dir:
+            # Extract to temp directory
+            with zipfile.ZipFile(io.BytesIO(data)) as z:
+                z.extractall(temp_dir)
+            print("✓ Extraction to temp directory successful")
+            
+            # Check if this is the first installation
+            is_first_install = not all(
+                os.path.exists(os.path.join(GTFS_DIR, f)) for f in STATIC_FILES
+            )
+            
+            if is_first_install:
+                print("\n📦 First installation detected - copying all files...")
+                # Copy all files
+                for file in os.listdir(temp_dir):
+                    if file.endswith('.txt'):
+                        src = os.path.join(temp_dir, file)
+                        dst = os.path.join(GTFS_DIR, file)
+                        shutil.copy2(src, dst)
+                        print(f"   ✓ Copied {file}")
+                changed_files = STATIC_FILES + DYNAMIC_FILES
+            else:
+                print("\n🔄 Updating dynamic files only (preserving static data)...")
+                changed_files = []
+                # Only copy dynamic files
+                for file in DYNAMIC_FILES:
+                    src = os.path.join(temp_dir, file)
+                    dst = os.path.join(GTFS_DIR, file)
+                    if os.path.exists(src):
+                        shutil.copy2(src, dst)
+                        changed_files.append(file)
+                        print(f"   ✓ Updated {file}")
+                    else:
+                        print(f"   ⚠️  {file} not found in download")
+                
+                print("\n📌 Static files preserved:")
+                for file in STATIC_FILES:
+                    if os.path.exists(os.path.join(GTFS_DIR, file)):
+                        print(f"   ✓ {file} (unchanged)")
+                
     except Exception as e:
         print(f"❌ Error extracting GTFS data: {e}")
         return False
 
-    # 3. Convert to JSON
-    print("\n🔄 Running GTFS to JSON conversion...")
+    # 3. Convert to JSON using selective converter
+    print("\n🔄 Running selective GTFS to JSON conversion...")
     try:
-        converter = GTFSConverter(gtfs_folder=GTFS_DIR)
-        converter.convert()
+        converter = SelectiveGTFSConverter(gtfs_folder=GTFS_DIR)
+        converter.convert_selective(changed_files=changed_files)
         print("✓ Conversion successful")
         return True
     except Exception as e:

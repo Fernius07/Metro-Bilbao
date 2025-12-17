@@ -5,7 +5,7 @@ import io
 import shutil
 import ssl
 import tempfile
-from selective_gtfs_converter import SelectiveGTFSConverter
+
 
 GTFS_URL = "https://cms.metrobilbao.eus/get/open_data/horarios/es"
 GTFS_DIR = "gtfs"
@@ -88,16 +88,7 @@ def update_gtfs():
         print(f"❌ Error extracting GTFS data: {e}")
         return False
 
-    # 3. Convert to JSON using selective converter
-    print("\n🔄 Running selective GTFS to JSON conversion...")
-    try:
-        converter = SelectiveGTFSConverter(gtfs_folder=GTFS_DIR)
-        converter.convert_selective(changed_files=changed_files)
-        print("✓ Conversion successful")
-        return True
-    except Exception as e:
-        print(f"❌ Error during conversion: {e}")
-        return False
+    return True
 
 if __name__ == "__main__":
     success = update_gtfs()

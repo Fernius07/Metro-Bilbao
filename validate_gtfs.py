@@ -194,8 +194,23 @@ class GTFSValidator:
         self.load_all()
         
         if not self.data.get('stops') and not self.data.get('trips'):
-            print("❌ Cannot validate: no GTFS data found")
-            return False
+            print("⚠️ No GTFS data found locally.")
+            print("🔄 Attempting to download and install latest GTFS data...")
+            try:
+                from update_gtfs import update_gtfs
+                if update_gtfs():
+                    print("✅ Data successfully downloaded. Retrying validation...")
+                    self.load_all()
+                else:
+                    print("❌ Failed to download GTFS data. Validation aborted.")
+                    return False
+            except ImportError:
+                 print("❌ Could not import update_gtfs module. validation aborted.")
+                 return False
+
+        if not self.data.get('stops') and not self.data.get('trips'):
+             print("❌ Still no data found after update attempt.")
+             return False
         
         self.validate_file_completeness()
         self.validate_coordinates()

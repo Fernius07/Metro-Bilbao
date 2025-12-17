@@ -96,17 +96,36 @@ class GTFSParser {
     processData() {
         console.time('GTFS Processing');
         this.processed.stationCodes = new Map();
+        // Primero pase para indexar todas las paradas y tener acceso a parent_station
+        const allStops = new Map();
+        this.data.stops.forEach(stop => {
+            allStops.set(stop.stop_id, stop);
+        });
+
         this.data.stops.forEach(stop => {
             if (stop.stop_code && stop.stop_code.length === 3) {
                 this.processed.stationCodes.set(stop.stop_id, stop.stop_code);
             }
-            if (!/^\d/.test(stop.stop_name)) {
-                this.processed.stopsById.set(stop.stop_id, {
+
+            // Permitir mostrar solo si tiene stop_code (petición usuario)
+            // Esto elimina estaciones padre y entradas, dejando solo los andenes/paradas con código
+            if (stop.stop_code) {
+                const stopObj = {
                     id: stop.stop_id,
                     name: stop.stop_name,
                     lat: parseFloat(stop.stop_lat),
-                    lon: parseFloat(stop.stop_lon)
-                });
+                    lon: parseFloat(stop.stop_lon),
+                    parent_station: stop.parent_station || null,
+                    children: []
+                };
+                this.processed.stopsById.set(stop.stop_id, stopObj);
+            }
+        });
+
+        // Segundo pase para vincular hijos a padres
+        this.processed.stopsById.forEach(stop => {
+            if (stop.parent_station && this.processed.stopsById.has(stop.parent_station)) {
+                this.processed.stopsById.get(stop.parent_station).children.push(stop.id);
             }
         });
         this.data.routes.forEach(route => {

@@ -345,64 +345,80 @@ class TrainSimulator {
      * @param {number} windowMinutes - Minutos a buscar en el futuro (default 45).
      * @returns {Object} { trains: [], is_terminal: boolean }
      */
+    /**
+     * Obtiene los próximos trenes para una estación específica dentro de una ventana de tiempo.
+     * @param {string} stopId - ID de la parada.
+     * @param {Date} now - Hora actual.
+     * @param {number} windowMinutes - Minutos a buscar en el futuro (default 45).
+     * @returns {Object} { trains: [], is_terminal: boolean }
+     */
     getUpcomingTrainsForStation(stopId, now, windowMinutes = 45) {
         const secondsFromMidnight = this.getSecondsFromMidnight(now);
         const dateStr = this.getDateString(now);
         const dayOfWeek = now.getDay();
         const windowSeconds = windowMinutes * 60;
         const endTime = secondsFromMidnight + windowSeconds;
+
         const activeServices = this.getActiveServices(dateStr, dayOfWeek);
         const upcomingTrains = [];
-        let isTerminal = false;
-        let terminalCheckCount = 0;
-        let terminalMatchCount = 0;
-        for (const trip of this.gtfs.tripsById.values()) {
-            if (!activeServices.has(trip.service_id)) continue;
-            const lastStop = trip.stop_times[trip.stop_times.length - 1];
-            terminalCheckCount++;
-            if (lastStop.stop_id === stopId) {
-                terminalMatchCount++;
-            }
+
+        // Identificar todos los IDs de parada relevantes (padre + hijos)
+        const targetStopIds = new Set([stopId]);
+        const stopInfo = this.gtfs.stopsById.get(stopId);
+        if (stopInfo && stopInfo.children) {
+            stopInfo.children.forEach(childId => targetStopIds.add(childId));
         }
-        isTerminal = terminalCheckCount > 0 && (terminalMatchCount / terminalCheckCount) > 0.3;
+
         for (const trip of this.gtfs.tripsById.values()) {
             if (!activeServices.has(trip.service_id)) continue;
-            const offset = this.realTimeOffsets.get(trip.id) || 0;
-            const stopIndex = trip.stop_times.findIndex(st => st.stop_id === stopId);
+
+            // Buscar índice de CUALQUIER parada relevante en el trip
+            // Usamos findIndex pero buscando si está en el set de targets
+            const stopIndex = trip.stop_times.findIndex(st => targetStopIds.has(st.stop_id));
             if (stopIndex === -1) continue;
+
             const stopTime = trip.stop_times[stopIndex];
-            const isLastStop = stopIndex === trip.stop_times.length - 1;
-            if (isTerminal && !isLastStop) {
-                continue;
+            const offset = this.realTimeOffsets.get(trip.id) || 0;
+
+            // Determinar la hora relevante para mostar (llegada o salida)
+            let displayTime = stopTime.arrival;
+            if (stopIndex === 0) {
+                displayTime = stopTime.departure;
             }
-            let relevantTime;
-            if (isTerminal && stopIndex === 0) {
-                relevantTime = stopTime.departure;
-            } else {
-                relevantTime = stopTime.arrival;
-            }
-            relevantTime += offset;
-            if (relevantTime >= secondsFromMidnight && relevantTime <= endTime) {
-                const minutesUntil = Math.round((relevantTime - secondsFromMidnight) / 60);
+            displayTime += offset;
+
+            // Determinar la hora de salida real (para saber hasta cuándo mostrarlo)
+            let departureTime = stopTime.departure + offset;
+
+            // Filtrar: Mostramos el tren hasta que haya SALIDO de la estación
+            if (departureTime >= secondsFromMidnight && displayTime <= endTime) {
+                let minutesUntil = Math.round((displayTime - secondsFromMidnight) / 60);
+
+                // Si ya llegó pero no ha salido (está en la estación), mostramos 0 en vez de negativo
+                if (minutesUntil < 0) minutesUntil = 0;
+
                 const lastStop = trip.stop_times[trip.stop_times.length - 1];
                 const destinationInfo = this.gtfs.stopsById.get(lastStop.stop_id);
                 const trainLength = this.trainLengths.get(trip.id);
+
                 upcomingTrains.push({
                     trip_id: trip.id,
                     route_id: trip.route_id,
                     destination_name: destinationInfo ? destinationInfo.name : 'Unknown',
                     arrival_time: relevantTime,
                     minutes_until: minutesUntil,
-                    is_departing: isTerminal && stopIndex === 0,
+                    is_departing: stopIndex === 0,
                     delay_msg: offset !== 0 ? (offset > 0 ? `+${Math.round(offset / 60)}` : `${Math.round(offset / 60)}`) : '',
                     length: trainLength || null
                 });
             }
         }
+
         upcomingTrains.sort((a, b) => a.arrival_time - b.arrival_time);
+
         return {
             trains: upcomingTrains,
-            is_terminal: isTerminal
+            is_terminal: false // Ya no usamos esta heurística
         };
     }
 }

@@ -381,18 +381,18 @@ class TrainSimulator {
             const offset = this.realTimeOffsets.get(trip.id) || 0;
 
             // Determinar la hora relevante para mostar (llegada o salida)
-            let displayTime = stopTime.arrival;
+            let relevantTime = stopTime.arrival;
             if (stopIndex === 0) {
-                displayTime = stopTime.departure;
+                relevantTime = stopTime.departure;
             }
-            displayTime += offset;
+            relevantTime += offset;
 
             // Determinar la hora de salida real (para saber hasta cuándo mostrarlo)
             let departureTime = stopTime.departure + offset;
 
             // Filtrar: Mostramos el tren hasta que haya SALIDO de la estación
-            if (departureTime >= secondsFromMidnight && displayTime <= endTime) {
-                let minutesUntil = Math.round((displayTime - secondsFromMidnight) / 60);
+            if (departureTime >= secondsFromMidnight && relevantTime <= endTime) {
+                let minutesUntil = Math.round((relevantTime - secondsFromMidnight) / 60);
 
                 // Si ya llegó pero no ha salido (está en la estación), mostramos 0 en vez de negativo
                 if (minutesUntil < 0) minutesUntil = 0;

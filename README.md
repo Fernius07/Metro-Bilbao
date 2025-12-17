@@ -67,7 +67,15 @@ El proyecto incluye datos GTFS en `/gtfs/`. Archivos requeridos:
 - `calendar.txt`
 - `calendar_dates.txt`
 
-Para actualizar los datos, reemplaza los archivos en la carpeta `/gtfs/`.
+### Actualización de Datos
+
+El proyecto usa un **sistema de actualización selectiva** que:
+- ✅ Actualiza automáticamente los horarios diariamente (4:00 UTC)
+- ✅ Preserva las ubicaciones de paradas y geometría de rutas
+- ✅ Valida la integridad de los datos antes de actualizar
+- ✅ Solo procesa los archivos que cambian (más rápido)
+
+Para más información sobre el proceso de actualización, consulta `CONVERSION_README.md`.
 
 ## API en Tiempo Real
 

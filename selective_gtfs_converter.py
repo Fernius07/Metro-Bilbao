@@ -28,7 +28,7 @@ class SelectiveGTFSConverter(GTFSConverter):
                     self.existing_data = json.load(f)
                 print(f"✓ Loaded existing JSON data from {json_path}")
                 return True
-            except Exception as e:
+            except (json.JSONDecodeError, UnicodeDecodeError, OSError) as e:
                 print(f"⚠️  Could not load existing JSON: {e}")
                 return False
         return False

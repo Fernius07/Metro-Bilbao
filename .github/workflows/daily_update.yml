@@ -42,12 +42,18 @@ jobs:
     - name: Check for changes
       id: check_changes
       run: |
-        git diff --quiet gtfs/*.txt gtfs/gtfs-data.json || echo "has_changes=true" >> $GITHUB_OUTPUT
-        if git diff --quiet gtfs/*.txt gtfs/gtfs-data.json; then
-          echo "No changes detected in GTFS data"
+        # Check if files exist and have changes
+        if [ -f gtfs/gtfs-data.json ]; then
+          git diff --quiet gtfs/*.txt gtfs/gtfs-data.json || echo "has_changes=true" >> $GITHUB_OUTPUT
+          if git diff --quiet gtfs/*.txt gtfs/gtfs-data.json; then
+            echo "No changes detected in GTFS data"
+          else
+            echo "Changes detected in GTFS data"
+            git diff --stat gtfs/
+          fi
         else
-          echo "Changes detected in GTFS data"
-          git diff --stat gtfs/
+          echo "First run - gtfs-data.json created"
+          echo "has_changes=true" >> $GITHUB_OUTPUT
         fi
 
     - name: Commit and Push changes

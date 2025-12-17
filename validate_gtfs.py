@@ -23,7 +23,7 @@ class GTFSValidator:
             with open(filepath, 'r', encoding='utf-8-sig') as f:
                 reader = csv.DictReader(f)
                 return list(reader)
-        except Exception as e:
+        except (UnicodeDecodeError, csv.Error, OSError) as e:
             self.errors.append(f"Error loading {filename}: {e}")
             return []
     
@@ -122,13 +122,16 @@ class GTFSValidator:
                     break
                 expected_seq += 1
             
-            # Check time progression
+            # Check time progression (times are in HH:MM:SS format as strings)
             prev_departure = None
             for st in stop_times:
-                if prev_departure and st['arrival'] < prev_departure:
+                # Convert time strings to comparable format (simple string comparison works for HH:MM:SS)
+                # Note: GTFS times can exceed 24:00:00 for trips past midnight
+                if prev_departure and st['arrival'] and st['arrival'] < prev_departure:
                     invalid_times += 1
                     break
-                prev_departure = st['departure']
+                if st['departure']:
+                    prev_departure = st['departure']
         
         if invalid_sequences > 0:
             self.warnings.append(f"Found {invalid_sequences} trips with non-continuous stop sequences")

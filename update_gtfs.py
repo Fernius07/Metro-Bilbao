@@ -84,7 +84,7 @@ def update_gtfs():
                     if os.path.exists(os.path.join(GTFS_DIR, file)):
                         print(f"   ✓ {file} (unchanged)")
                 
-    except Exception as e:
+    except (zipfile.BadZipFile, OSError, shutil.Error) as e:
         print(f"❌ Error extracting GTFS data: {e}")
         return False
 

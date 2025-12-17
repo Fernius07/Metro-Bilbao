@@ -1,5 +1,6 @@
 service_id,monday,tuesday,wednesday,thursday,friday,saturday,sunday,start_date,end_date
-invl_25.pex,1,1,1,1,0,0,0,20251216,20260116
-sempascnavinvv_25.pex,0,0,0,0,1,0,0,20251216,20260116
-invs_25.pex,0,0,0,0,0,1,0,20251216,20260116
-invd_25.pex,0,0,0,0,0,0,1,20251216,20260116
+invl_25.pex,1,0,1,1,0,0,0,20251217,20260117
+sempascnavinvl_25.pex,0,1,0,0,0,0,0,20251217,20260117
+sempascnavinvv_25.pex,0,0,0,0,1,0,0,20251217,20260117
+invs_25.pex,0,0,0,0,0,1,0,20251217,20260117
+invd_25.pex,0,0,0,0,0,0,1,20251217,20260117

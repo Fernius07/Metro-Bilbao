@@ -1,4 +1,6 @@
-﻿/**
+﻿import CONFIG from './config.js';
+
+/**
  * MapRenderer: Gestiona la representación visual de la red ferroviaria y trenes.
  * Utiliza Leaflet.js para el renderizado del mapa y gestiona capas SVG para
  * el movimiento fluido de los marcadores de tren.
@@ -388,7 +390,7 @@ class MapRenderer {
      */
     renderStationContent(result) {
         if (result.trains.length === 0) {
-            return '<div style="padding: 2rem; text-align: center; color: #999;">No hay trenes próximos programados en los próximos minutos.</div>';
+            return '<div style="padding: 2rem; text-align: center; color: #999;">No hay trenes programados en los próximos minutos.</div>';
         }
 
         let content = '<div class="station-list">';
@@ -416,12 +418,12 @@ class MapRenderer {
                             <span style="font-weight:600;">${train.destination_name} ${lengthStr}</span>
                         </div>
                         <div style="font-size:0.85em; color:#666; margin-top:4px;">
-                            Llegada: ${this.formatTime(train.arrival_time)}
+                            ${this.formatTime(train.arrival_time)}
                         </div>
                     </div>
                     <div style="text-align: right; min-width: 70px;">
                         <div style="font-size: 1.2em; font-weight: bold; color: var(--primary-color);">
-                            ${train.minutes_until}'
+                            ${train.minutes_until}
                         </div>
                         ${delayHtml}
                     </div>

@@ -1,4 +1,6 @@
-﻿/**
+﻿import CONFIG from './config.js';
+
+/**
  * GTFSParser: Analizador y procesador de datos de transporte público.
  * Responsable de cargar los archivos estáticos de Metro Bilbao, procesar el CSV
  * y construir estructuras de datos indexadas para acceso rápido en memoria.

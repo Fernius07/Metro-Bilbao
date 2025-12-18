@@ -1,4 +1,6 @@
-﻿/**
+﻿import CONFIG from './config.js';
+
+/**
  * MetroAPI: Gestor de comunicaciones con el backend de Metro Bilbao.
  * Implementa una capa de abstracción sobre la API REST oficial para manejar
  * la recuperación de tiempos de paso y estados de plataforma.

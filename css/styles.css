@@ -1,6 +1,12 @@
-﻿:root {
+﻿/* 
+ * Variables Globales: Definición del sistema de diseño (tokens).
+ * Incluye colores institucionales, paleta neutral y tipografía corporativa.
+ */
+:root {
     --primary-color: #E52A12;
+    /* Rojo Metro Bilbao */
     --secondary-color: #97999B;
+    /* Gris institucional */
     --accent-color: #E52A12;
     --bg-color: #f8f9fa;
     --text-color: #333333;
@@ -10,6 +16,7 @@
     --font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
+/* Definición de colores para el Modo Noche */
 [data-theme="dark"] {
     --primary-color: #ff4d4d;
     --secondary-color: #b0b3b8;
@@ -41,6 +48,7 @@ body {
     z-index: 1;
 }
 
+/* Contenedor flotante para elementos de la interfaz sobre el mapa */
 .ui-overlay {
     position: absolute;
     top: 0;
@@ -48,6 +56,7 @@ body {
     width: 100%;
     height: 100%;
     pointer-events: none;
+    /* Permite clics en el mapa a través de los espacios vacíos */
     z-index: 1000;
     display: flex;
     flex-direction: column;
@@ -56,6 +65,7 @@ body {
     gap: 10px;
 }
 
+/* Panel superior de información general */
 .header-panel {
     pointer-events: auto;
     background: var(--panel-bg);

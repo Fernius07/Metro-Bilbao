@@ -3,7 +3,6 @@
  */
 const CONFIG = {
     GTFS_FOLDER: 'gtfs/', // Carpeta donde se encuentran los archivos GTFS
-    DEFAULT_LANGUAGE: 'es', // Idioma por defecto
     MAP_CENTER: [43.2630, -2.9350], // Centro inicial del mapa (Bilbao)
     MAP_ZOOM: 12, // Zoom inicial
     UPDATE_INTERVAL_MS: 50, // Intervalo de actualización de la simulación (ms)

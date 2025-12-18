@@ -1,21 +1,28 @@
-﻿import CONFIG from './config.js';
-import i18n from './i18n.js';
-/**
- * Clase responsable de renderizar el mapa, las capas y los elementos interactivos.
- * Gestiona marcadores de trenes, estaciones, políneas de rutas y paneles de información.
+﻿/**
+ * MapRenderer: Gestiona la representación visual de la red ferroviaria y trenes.
+ * Utiliza Leaflet.js para el renderizado del mapa y gestiona capas SVG para
+ * el movimiento fluido de los marcadores de tren.
  */
 class MapRenderer {
-    constructor(containerId, language = 'es') {
-        this.language = language;
+    /**
+     * Inicializa el motor de mapas Leaflet, configura las capas y los contenedores de UI.
+     * @param {string} containerId - El ID del elemento HTML donde se renderizará el mapa.
+     */
+    constructor(containerId) {
+        // Inicialización del objeto principal de Leaflet
         this.map = L.map(containerId, {
             center: CONFIG.MAP_CENTER,
             zoom: CONFIG.MAP_ZOOM,
             zoomControl: false,
             attributionControl: false
         });
+
+        // Creamos un panel SVG específico para el renderizado fluido de trenes
         this.map.createPane('trainsPane');
         this.map.getPane('trainsPane').style.zIndex = 650;
         this.trainsRenderer = L.svg({ pane: 'trainsPane' });
+
+        // Definición de las capas organizadas por tipo de dato
         this.layers = {
             base: {
                 standard: L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
@@ -25,12 +32,15 @@ class MapRenderer {
                     attribution: '&copy; Esri'
                 })
             },
-            shapes: L.layerGroup().addTo(this.map),
-            stops: L.layerGroup().addTo(this.map),
-            trains: L.layerGroup().addTo(this.map)
+            shapes: L.layerGroup().addTo(this.map), // Geometría de las líneas ferroviarias
+            stops: L.layerGroup().addTo(this.map),  // Iconos de estaciones
+            trains: L.layerGroup().addTo(this.map)  // Marcadores dinámicos de trenes
         };
+
         this.layers.base.standard.addTo(this.map);
         L.control.zoom({ position: 'bottomright' }).addTo(this.map);
+
+        // Referencias internas para la gestión de estado de la UI
         this.trainMarkers = new Map();
         this.gtfsData = null;
         this.simulator = null;
@@ -41,9 +51,12 @@ class MapRenderer {
         this.panelSubtitle = document.getElementById('panel-subtitle-text');
         this.panelContent = document.getElementById('panel-content');
         this.closePanelBtn = document.getElementById('close-panel-btn');
+
         if (this.closePanelBtn) {
             this.closePanelBtn.addEventListener('click', () => this.closeInfoPanel());
         }
+
+        // Manejador global para cerrar paneles al hacer click en el mapa base
         this.map.on('click', (e) => {
             if (e.originalEvent.target.closest('.info-panel')) return;
             this.closeInfoPanel();
@@ -55,9 +68,13 @@ class MapRenderer {
 
         this.followedTrainId = null;
         this.map.on('dragstart', () => {
-            this.followedTrainId = null;
+            this.followedTrainId = null; // Detener seguimiento si el usuario mueve el mapa
         });
     }
+    /**
+     * Alterna entre temas visuales (claro/oscuro).
+     * @param {string} theme - 'dark' o 'light'.
+     */
     setTheme(theme) {
         if (theme === 'dark') {
             this.layers.base.standard.setUrl('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png');
@@ -65,6 +82,10 @@ class MapRenderer {
             this.layers.base.standard.setUrl('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png');
         }
     }
+    /**
+     * Alterna la visualización entre mapa estándar y satélite.
+     * @param {string} type - 'satellite' u otro para estándar.
+     */
     toggleLayer(type) {
         if (type === 'satellite') {
             this.map.removeLayer(this.layers.base.standard);
@@ -75,13 +96,15 @@ class MapRenderer {
         }
     }
     /**
-     * Renderiza los elementos estáticos del GTFS: formas (rutas) y paradas.
-     * @param {Object} processedData - Datos GTFS procesados.
+     * Renderiza los elementos estáticos del GTFS: líneas (shapes) y estaciones (stops).
+     * @param {Object} processedData - Objeto con datos GTFS ya procesados por el parser.
      */
     renderStaticData(processedData) {
         this.routesById = processedData.routesById;
         this.shapesById = processedData.shapesById;
         const shapesByRouteDir = new Map();
+
+        // Determinar qué geometría (shapes) dibujar basándose en los viajes activos
         processedData.shapesById.forEach(shape => {
             const trips = processedData.tripsByShapeId.get(shape.id);
             if (!trips || trips.length === 0) return;
@@ -94,6 +117,8 @@ class MapRenderer {
                 });
             }
         });
+
+        // Dibujo de polilíneas para representar las vías férreas
         shapesByRouteDir.forEach(({ shape, route_id }) => {
             const route = processedData.routesById.get(route_id);
             const latlngs = shape.points.map(p => [p.lat, p.lon]);
@@ -104,6 +129,8 @@ class MapRenderer {
                 smoothFactor: 1
             }).addTo(this.layers.shapes);
         });
+
+        // Dibujo de iconos personalizados de Metro para cada estación
         processedData.stopsById.forEach(stop => {
             const icon = L.divIcon({
                 className: 'custom-station-marker',
@@ -127,6 +154,11 @@ class MapRenderer {
             marker.addTo(this.layers.stops);
         });
     }
+    /**
+     * Determina el número de línea (L1 o L2) basándose en el nombre de destino.
+     * @param {string} destinationName - Nombre de la terminal.
+     * @returns {string} ID visual de la línea.
+     */
     getLineNumber(destinationName) {
         if (destinationName && (destinationName.includes('Kabiezes') || destinationName.includes('Basauri'))) {
             return 'L2';
@@ -207,13 +239,20 @@ class MapRenderer {
         });
     }
     /**
-     * Muestra el panel lateral con información.
+     * Muestra el panel lateral informativo (info-panel) con contenido dinámico.
+     * @param {string} title - Título del panel.
+     * @param {string} subtitle - Subtítulo descriptivo.
+     * @param {string} contentHtml - Contenido en formato HTML.
+     * @param {string} type - Tipo de panel ('train' o 'station').
+     * @param {string} id - ID del objeto seleccionado.
      */
     openInfoPanel(title, subtitle, contentHtml, type, id) {
         if (!this.panelElement) return;
         this.panelTitle.textContent = title;
         this.panelSubtitle.textContent = subtitle;
         this.panelContent.innerHTML = contentHtml;
+
+        // Estética condicional según la línea (L2 en negro, L1 en rojo)
         if (type === 'train' && title.startsWith('L2')) {
             this.panelTitle.style.color = '#000000';
         } else if (type === 'train' && title.startsWith('L1')) {
@@ -221,13 +260,14 @@ class MapRenderer {
         } else {
             this.panelTitle.style.color = '';
         }
+
         this.panelElement.classList.add('visible');
         document.body.classList.add('panel-open');
         this.activePanel = { type, id };
     }
 
     /**
-     * Cierra el panel lateral.
+     * Cierra el panel lateral y limpia el estado de selección.
      */
     closeInfoPanel() {
         if (!this.panelElement) return;
@@ -236,42 +276,58 @@ class MapRenderer {
         this.activePanel = null;
     }
     /**
-     * Activa el seguimiento de un tren y muestra su información detallada.
+     * Prepara y muestra el panel detallado de un tren seleccionado.
+     * @param {Object} train - Datos del tren actualizados.
      */
     showTrainPanel(train) {
         this.followedTrainId = train.trip_id;
-        const lineNumber = this.getLineNumber(train.destination_name);
         this.updateTrainPanelContent(train);
     }
 
+    /**
+     * Actualiza dinámicamente el contenido del panel cuando un tren está seleccionado.
+     * Genera la lista de próximas estaciones y tiempos estimados.
+     * @param {Object} train - Datos del tren.
+     */
     updateTrainPanelContent(train) {
         const lineNumber = this.getLineNumber(train.destination_name);
         const title = `${lineNumber} | ${train.destination_name}`;
         const subtitle = `Tren en servicio`;
+
         const trip = this.gtfsData.tripsById.get(train.trip_id);
         if (!trip) return;
+
         const currentTime = this.currentTime ? this.getSecondsFromMidnight(this.currentTime) : 0;
+
+        // Determinar cuál es la siguiente parada lógica basándose en el tiempo y posición
         let nextStopIndex = 0;
         for (let i = 0; i < trip.stop_times.length; i++) {
             const delay = train.delay || 0;
-            // Usar la hora ajustada (horario + retraso) para determinar si ya pasamos la estación
             if (trip.stop_times[i].arrival + delay > currentTime) {
                 nextStopIndex = i;
                 break;
             }
         }
+
+        // Generación del HTML para la lista de trayecto
         let content = '<div class="station-list">';
         trip.stop_times.forEach((stopTime, index) => {
+            // Optimización: solo mostrar paradas recientes y futuras
             if (index < nextStopIndex - 1) return;
+
             const stopInfo = this.gtfsData.stopsById.get(stopTime.stop_id);
             const isPast = index < nextStopIndex;
             const isNext = index === nextStopIndex;
             const delay = train.delay || 0;
             const adjustedArrival = stopTime.arrival + delay;
             const minutesUntil = Math.round((adjustedArrival - currentTime) / 60);
+
+            // Estilos diferenciales por estado de la parada
             const color = isPast ? '#999' : (isNext ? 'var(--primary-color)' : 'var(--text-color)');
             const fontWeight = isNext ? 'bold' : 'normal';
             const bgColor = isNext ? 'rgba(229, 42, 18, 0.05)' : 'transparent';
+
+            // Visualización de retrasos si existen
             let delayHtml = '';
             if (!isPast && delay !== 0) {
                 const delayMin = Math.round(delay / 60);
@@ -279,6 +335,7 @@ class MapRenderer {
                 const sign = delay > 0 ? '+' : '';
                 delayHtml = `<span style="color: ${delayColor}; font-size: 0.8em; margin-left: 4px;">(${sign}${delayMin})</span>`;
             }
+
             let timeDisplay = '';
             if (!isPast) {
                 if (minutesUntil <= 0) timeDisplay = 'Ahora';
@@ -286,6 +343,7 @@ class MapRenderer {
             } else {
                 timeDisplay = this.formatTime(adjustedArrival);
             }
+
             content += `
                 <div class="station-list-item" style="background-color: ${bgColor}; color: ${color}; font-weight: ${fontWeight}; padding: 8px 0;">
                     <div style="flex: 1; display: flex; align-items: center;">
@@ -300,46 +358,56 @@ class MapRenderer {
             `;
         });
         content += '</div>';
+
+        // Actualización o creación del panel
         if (this.activePanel && this.activePanel.type === 'train' && this.activePanel.id === train.trip_id) {
             this.panelContent.innerHTML = content;
         } else {
             this.openInfoPanel(title, subtitle, content, 'train', train.trip_id);
-            setTimeout(() => {
-            }, 100);
         }
     }
 
+    /**
+     * Muestra el panel informativo de una estación.
+     * @param {string} stopId - ID de la parada GTFS.
+     * @param {string} stopName - Nombre legible de la estación.
+     */
     showStationPanel(stopId, stopName) {
-        if (!this.simulator || !this.currentTime || !this.gtfsData) {
-            return;
-        }
+        if (!this.simulator || !this.currentTime || !this.gtfsData) return;
+
+        // Obtener trenes que llegarán a esta estación en los próximos 45 minutos
         const result = this.simulator.getUpcomingTrainsForStation(stopId, this.currentTime, 45);
-        this.updateStationPanelContent(stopId, stopName, result);
         this.openInfoPanel(stopName, 'Próximos trenes', this.renderStationContent(result), 'station', stopId);
     }
 
     /**
      * Genera el HTML para el panel de información de una estación.
-     * Muestra la lista de próximos trenes.
+     * Muestra la lista de próximos trenes con sus tiempos estimados y retrasos.
+     * @param {Object} result - Resultados calculados por el simulador para la estación.
+     * @returns {string} Fragmento HTML listo para insertar.
      */
     renderStationContent(result) {
         if (result.trains.length === 0) {
-            return '<div style="padding: 2rem; text-align: center; color: #999;">No hay trenes próximos en los próximos minutos.</div>';
+            return '<div style="padding: 2rem; text-align: center; color: #999;">No hay trenes próximos programados en los próximos minutos.</div>';
         }
+
         let content = '<div class="station-list">';
-        const trainsToShow = result.trains.slice(0, 10);
+        const trainsToShow = result.trains.slice(0, 10); // Limitar a los 10 más próximos
+
         trainsToShow.forEach(train => {
             const lineNumber = this.getLineNumber(train.destination_name);
             const route = this.routesById.get(train.route_id);
             const routeColor = route ? route.color : '#000';
             const badgeColor = lineNumber === 'L2' ? '#000' : routeColor;
             const lengthStr = train.length === 5 ? ' <small>(5 coches)</small>' : '';
+
             let delayHtml = '';
             if (train.delay_msg) {
                 const isLate = train.delay_msg.includes('+');
                 const color = isLate ? '#cc0000' : '#2e7d32';
                 delayHtml = `<span style="color: ${color}; font-size: 0.85em; margin-left: 5px;">(${train.delay_msg})</span>`;
             }
+
             content += `
                 <div class="station-list-item" style="padding: 12px 0;">
                     <div style="display:flex; flex-direction:column; flex: 1;">
@@ -348,7 +416,7 @@ class MapRenderer {
                             <span style="font-weight:600;">${train.destination_name} ${lengthStr}</span>
                         </div>
                         <div style="font-size:0.85em; color:#666; margin-top:4px;">
-                            ${this.formatTime(train.arrival_time)}
+                            Llegada: ${this.formatTime(train.arrival_time)}
                         </div>
                     </div>
                     <div style="text-align: right; min-width: 70px;">
@@ -365,27 +433,37 @@ class MapRenderer {
     }
     updateStationPanelContent(stopId, stopName, result) {
     }
+    /**
+     * Refresca el contenido del panel de estación si está abierto.
+     * Se llama periódicamente para actualizar los tiempos de los próximos trenes.
+     */
     refreshStationPopup() {
         if (!this.activePanel || this.activePanel.type !== 'station') return;
         const { id } = this.activePanel;
-        const stop = this.gtfsData.stopsById.get(id);
-        if (!stop) return;
         const result = this.simulator.getUpcomingTrainsForStation(id, this.currentTime, 45);
         this.panelContent.innerHTML = this.renderStationContent(result);
     }
+    /**
+     * Calcula los segundos transcurridos desde la medianoche para una fecha dada.
+     * @param {Date} date - Objeto fecha.
+     * @returns {number} Segundos desde las 00:00:00.
+     */
     getSecondsFromMidnight(date) {
         const hours = date.getHours();
         const minutes = date.getMinutes();
         const seconds = date.getSeconds();
         return hours * 3600 + minutes * 60 + seconds;
     }
+
+    /**
+     * Formatea segundos desde la medianoche a cadena legible HH:MM.
+     * @param {number} secondsFromMidnight - Segundos.
+     * @returns {string} Tiempo formateado.
+     */
     formatTime(secondsFromMidnight) {
-        const hours = Math.floor(secondsFromMidnight / 3600);
+        const hours = Math.floor(secondsFromMidnight / 3600) % 24;
         const minutes = Math.floor((secondsFromMidnight % 3600) / 60);
         return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
-    }
-    setLanguage(language) {
-        this.language = language;
     }
     setGTFSData(data) {
         this.gtfsData = data;
@@ -400,6 +478,9 @@ class MapRenderer {
         }
     }
 
+    /**
+     * Configura los eventos de interacción para la búsqueda de estaciones.
+     */
     setupSearch() {
         if (!this.searchInput || !this.searchResults) return;
 
@@ -413,6 +494,7 @@ class MapRenderer {
             this.performSearch(query);
         });
 
+        // Cerrar resultados al hacer click fuera del contenedor
         document.addEventListener('click', (e) => {
             if (!e.target.closest('.search-container')) {
                 this.searchResults.classList.remove('visible');
@@ -428,7 +510,8 @@ class MapRenderer {
 
     /**
      * Realiza la búsqueda de estaciones por nombre.
-     * Ordena resultados por uso (popularidad) y luego alfabéticamente.
+     * Implementa lógica de filtrado y ordenación por relevancia (popularidad y cercanía alfabética).
+     * @param {string} query - Término de búsqueda.
      */
     performSearch(query) {
         if (!this.gtfsData || !this.gtfsData.stopsById) return;
@@ -471,6 +554,10 @@ class MapRenderer {
         this.displaySearchResults(matches.slice(0, 10));
     }
 
+    /**
+     * Renderiza los resultados de búsqueda en la lista desplegable.
+     * @param {Array} results - Lista de estaciones coincidentes.
+     */
     displaySearchResults(results) {
         if (results.length === 0) {
             this.searchResults.classList.remove('visible');
@@ -492,6 +579,7 @@ class MapRenderer {
         this.searchResults.innerHTML = content;
         this.searchResults.classList.add('visible');
 
+        // Manejador de selección para cada ítem de resultado
         const items = this.searchResults.querySelectorAll('.search-result-item');
         items.forEach(item => {
             item.addEventListener('click', () => {
@@ -504,10 +592,15 @@ class MapRenderer {
         });
     }
 
+    /**
+     * Se desplaza a una estación seleccionada y abre su panel de información.
+     * @param {Object} stop - Datos de la estación seleccionada.
+     */
     selectStation(stop) {
         this.searchInput.value = '';
         this.searchResults.classList.remove('visible');
 
+        // Transición de cámara fluida hasta la estación
         this.map.flyTo([stop.lat, stop.lon], 16, {
             duration: 1.5,
             easeLinearity: 0.25

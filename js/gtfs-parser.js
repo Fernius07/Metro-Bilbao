@@ -1,10 +1,14 @@
-﻿import CONFIG from './config.js';
-/**
- * Clase encargada de leer, analizar y procesar los archivos GTFS raw.
- * Transforma los archivos CSV en estructuras de datos optimizadas para el uso en memoria.
+﻿/**
+ * GTFSParser: Analizador y procesador de datos de transporte público.
+ * Responsable de cargar los archivos estáticos de Metro Bilbao, procesar el CSV
+ * y construir estructuras de datos indexadas para acceso rápido en memoria.
  */
 class GTFSParser {
+    /**
+     * Inicializa el almacén de datos crudos y las colecciones procesadas.
+     */
     constructor() {
+        // Almacenamiento de archivos CSV analizados (como arrays de objetos)
         this.data = {
             agency: [],
             stops: [],
@@ -15,70 +19,91 @@ class GTFSParser {
             calendar: [],
             calendar_dates: []
         };
+
+        // Estructuras de datos indexadas por ID para optimizar el rendimiento
         this.processed = {
-            stopsById: new Map(),
-            routesById: new Map(),
-            tripsById: new Map(),
-            shapesById: new Map(),
-            tripsByShapeId: new Map(),
-            calendar: [],
-            calendar_dates: []
+            stopsById: new Map(),        // Búsqueda rápida de paradas
+            routesById: new Map(),       // Búsqueda rápida de líneas/rutas
+            tripsById: new Map(),        // Datos detallados de viajes
+            shapesById: new Map(),       // Geometría de las líneas
+            tripsByShapeId: new Map(),   // Relación inversa Shape -> Viajes
+            calendar: [],                // Calendario de servicios
+            calendar_dates: []          // Excepciones al calendario
         };
     }
 
     /**
-     * Carga todos los archivos GTFS necesarios en paralelo.
-     * @returns {Promise<Object>} Promesa que resuelve con los datos procesados.
+     * Orquesta la carga de todos los archivos .txt que componen el GTFS.
+     * Utiliza promesas concurrentes para minimizar el tiempo de arranque.
+     * @returns {Promise<Object>} Promesa que resuelve con el objeto 'processed'.
      */
     async loadAll() {
         const files = [
             'agency.txt', 'stops.txt', 'routes.txt', 'trips.txt',
             'stop_times.txt', 'shapes.txt', 'calendar.txt', 'calendar_dates.txt'
         ];
+
         const promises = files.map(file => this.fetchAndParse(file));
         const results = await Promise.allSettled(promises);
+
+        // Validación de archivos críticos: la aplicación no puede funcionar sin estos
         const criticalFiles = ['stops.txt', 'routes.txt', 'trips.txt', 'stop_times.txt', 'shapes.txt'];
         const failedCritical = results.filter((r, i) => r.status === 'rejected' && criticalFiles.includes(files[i]));
+
         if (failedCritical.length > 0) {
-            throw new Error(`Failed to load critical GTFS files: ${failedCritical.map(f => f.reason).join(', ')}`);
+            throw new Error(`Archivos GTFS críticos ausentes o corruptos: ${failedCritical.map(f => f.reason).join(', ')}`);
         }
+
+        // Iniciar el procesamiento pesado después de asegurar que tenemos los datos
         this.processData();
         return this.processed;
     }
     /**
-     * Descarga y analiza un archivo CSV individual.
-     * @param {string} filename - Nombre del archivo a cargar (ej. 'stops.txt').
+     * Descarga y parsea un archivo individual.
+     * @param {string} filename - Nombre del archivo (ej: 'stops.txt').
      */
     async fetchAndParse(filename) {
         try {
             const response = await fetch(`${CONFIG.GTFS_FOLDER}${filename}`);
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            if (!response.ok) throw new Error(`HTTP Error ${response.status}`);
+
             const text = await response.text();
             const name = filename.replace('.txt', '');
+
             this.data[name] = this.parseCSV(text);
-            console.log(`Cargado ${filename}: ${this.data[name].length} registros`);
+
+            if (CONFIG.DEBUG) {
+                console.log(`GTFS: Cargado ${filename} con ${this.data[name].length} registros.`);
+            }
         } catch (e) {
-            console.warn(`No se pudo cargar ${filename}:`, e);
+            console.error(`Error crítico cargando ${filename}:`, e);
             const name = filename.replace('.txt', '');
             this.data[name] = [];
+            throw e; // Relanzar para que loadAll detecte el fallo en archivos críticos
         }
     }
 
     /**
-     * Convierte contenido CSV crudo en un array de objetos.
-     * Maneja comillas y limpieza de espacios.
-     * @param {string} text - Contenido RAW del archivo CSV.
-     * @returns {Array<Object>} Array de objetos con las columnas como claves.
+     * Transforma texto CSV crudo en una lista de objetos JSON.
+     * Implementa lógica robusta para manejar cabeceras y comillas.
+     * @param {string} text - Contenido crudo del archivo.
+     * @returns {Array<Object>} Lista de objetos con claves extraídas de la cabecera.
      */
     parseCSV(text) {
         if (!text || !text.trim()) return [];
+
         const lines = text.split(/\r?\n/).filter(l => l.trim());
         if (lines.length < 2) return [];
+
+        // Limpiar cabeceras de BOM, espacios y comillas
         const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
         const result = [];
+
         for (let i = 1; i < lines.length; i++) {
             const row = lines[i];
+            // Manejar valores que podrían tener comillas (ej: stop_name)
             const values = row.split(',').map(v => v.trim().replace(/^"|"$/g, ''));
+
             if (values.length === headers.length) {
                 const obj = {};
                 headers.forEach((h, index) => {

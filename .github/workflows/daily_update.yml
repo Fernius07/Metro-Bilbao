@@ -43,18 +43,13 @@ jobs:
     - name: Check for changes
       id: check_changes
       run: |
-        # Check if files exist and have changes
-        if [ -f gtfs/gtfs-data.json ]; then
-          git diff --quiet gtfs/*.txt gtfs/gtfs-data.json || echo "has_changes=true" >> $GITHUB_OUTPUT
-          if git diff --quiet gtfs/*.txt gtfs/gtfs-data.json; then
-            echo "No changes detected in GTFS data"
-          else
-            echo "Changes detected in GTFS data"
-            git diff --stat gtfs/
-          fi
+        # Check if GTFS files have changes
+        git diff --quiet gtfs/*.txt || echo "has_changes=true" >> $GITHUB_OUTPUT
+        if git diff --quiet gtfs/*.txt; then
+          echo "No changes detected in GTFS data"
         else
-          echo "First run - gtfs-data.json created"
-          echo "has_changes=true" >> $GITHUB_OUTPUT
+          echo "Changes detected in GTFS data"
+          git diff --stat gtfs/*.txt
         fi
 
     - name: Commit and Push changes
@@ -62,7 +57,7 @@ jobs:
       run: |
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-        git add gtfs/*.txt gtfs/gtfs-data.json
+        git add gtfs/*.txt
         git commit -m "🔄 Auto-update GTFS schedules $(date +'%Y-%m-%d %H:%M UTC')" -m "Updated dynamic files: stop_times, trips, calendar" || echo "No changes to commit"
         git push
 

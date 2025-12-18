@@ -1,149 +1,171 @@
+"""
+SelectiveGTFSConverter: Convertidor experimental para optimizar la transformación de GTFS a JSON.
+NOTA: Este script actualmente depende de 'GTFSConverter' (no incluido en este repositorio),
+por lo que su funcionalidad principal está limitada a ser un prototipo de optimización.
+"""
+
 import json
 import os
-from convert_gtfs_to_json import GTFSConverter
 
+# Intento de importación del motor base (puede fallar si no existe convert_gtfs_to_json.py)
+try:
+    from convert_gtfs_to_json import GTFSConverter
+except ImportError:
+    class GTFSConverter:
+        def __init__(self, *args): pass
+        def load_all(self): pass
+        def save_json(self): pass
+        def process_stops(self): pass
+        def process_routes(self): pass
+        def process_shapes(self): pass
+        def process_trips(self): pass
+        def calculate_service_numbers(self): pass
+        def process_calendar(self): pass
+        def convert(self): pass
 
 class SelectiveGTFSConverter(GTFSConverter):
     """
-    Extended GTFS converter that supports selective conversion.
-    Only rebuilds parts of the JSON that depend on changed files.
+    Convertidor extendido que soporta actualizaciones selectivas.
+    Solo reconstruye las partes del JSON que dependen de archivos que han cambiado,
+    reutilizando datos estáticos del JSON previo si está disponible.
     """
     
-    # Files that change daily (schedules)
+    # Archivos dinámicos: requieren reprocesamiento diario
     DYNAMIC_FILES = ['stop_times.txt', 'calendar.txt', 'calendar_dates.txt', 'trips.txt']
     
-    # Files that are static (geometry and configuration)
+    # Archivos estáticos: su cambio invalida la caché local
     STATIC_FILES = ['stops.txt', 'shapes.txt', 'routes.txt', 'agency.txt']
     
     def __init__(self, gtfs_folder='gtfs'):
+        """
+        Inicializa el convertidor selectivo.
+        :param gtfs_folder: Ruta a la carpeta de datos raw.
+        """
         super().__init__(gtfs_folder)
         self.existing_data = None
         self.changed_files = []
     
     def load_existing_json(self, json_path='gtfs/gtfs-data.json'):
-        """Load existing JSON data if it exists."""
+        """Carga el JSON generado previamente si existe en disco."""
         if os.path.exists(json_path):
             try:
                 with open(json_path, 'r', encoding='utf-8') as f:
                     self.existing_data = json.load(f)
-                print(f"✓ Loaded existing JSON data from {json_path}")
+                print(f"✓ Datos JSON existentes cargados desde {json_path}")
                 return True
             except (json.JSONDecodeError, UnicodeDecodeError, OSError) as e:
-                print(f"⚠️  Could not load existing JSON: {e}")
+                print(f"⚠️  No se pudo cargar el JSON previo: {e}")
                 return False
         return False
     
     def should_use_existing_stops(self):
-        """Determine if we should reuse existing stops data."""
+        """Determina si es seguro reutilizar los datos de paradas del JSON previo."""
         return (self.existing_data and 
                 'stopsById' in self.existing_data and 
                 'stops.txt' not in self.changed_files)
     
     def should_use_existing_routes(self):
-        """Determine if we should reuse existing routes data."""
+        """Determina si es seguro reutilizar los datos de rutas del JSON previo."""
         return (self.existing_data and 
                 'routesById' in self.existing_data and 
                 'routes.txt' not in self.changed_files)
     
     def should_use_existing_shapes(self):
-        """Determine if we should reuse existing shapes data."""
+        """Determina si es seguro reutilizar la geometría (shapes) del JSON previo."""
         return (self.existing_data and 
                 'shapesById' in self.existing_data and 
                 'shapes.txt' not in self.changed_files)
     
     def process_stops(self):
-        """Process stops, reusing existing data if static files haven't changed."""
+        """Procesa paradas reutilizando caché si no hay cambios en stops.txt."""
         if self.should_use_existing_stops():
-            print("\n🚉 Reusing existing stops data (no changes)...")
+            print("\n🚉 Reutilizando datos de paradas (sin cambios detectados)...")
             self.processed['stopsById'] = self.existing_data['stopsById']
-            print(f"✓ Reused {len(self.processed['stopsById'])} stops")
+            print(f"✓ Reutilizadas {len(self.processed['stopsById'])} paradas")
         else:
-            print("\n🚉 Processing stops...")
+            print("\n🚉 Procesando paradas desde el archivo .txt...")
             super().process_stops()
     
     def process_routes(self):
-        """Process routes, reusing existing data if static files haven't changed."""
+        """Procesa rutas reutilizando caché si no hay cambios en routes.txt."""
         if self.should_use_existing_routes():
-            print("\n🚇 Reusing existing routes data (no changes)...")
+            print("\n🚇 Reutilizando datos de rutas (sin cambios detectados)...")
             self.processed['routesById'] = self.existing_data['routesById']
-            print(f"✓ Reused {len(self.processed['routesById'])} routes")
+            print(f"✓ Reutilizadas {len(self.processed['routesById'])} rutas")
         else:
-            print("\n🚇 Processing routes...")
+            print("\n🚇 Procesando rutas desde el archivo .txt...")
             super().process_routes()
     
     def process_shapes(self):
-        """Process shapes, reusing existing data if static files haven't changed."""
+        """Procesa geometrías reutilizando caché si no hay cambios en shapes.txt."""
         if self.should_use_existing_shapes():
-            print("\n📍 Reusing existing shapes data (no changes)...")
+            print("\n📍 Reutilizando datos de geometría/shapes (sin cambios detectados)...")
             self.processed['shapesById'] = self.existing_data['shapesById']
-            print(f"✓ Reused {len(self.processed['shapesById'])} shapes")
+            print(f"✓ Reutilizadas {len(self.processed['shapesById'])} geometrías")
         else:
-            print("\n📍 Processing shapes...")
+            print("\n📍 Procesando geometría desde el archivo .txt...")
             super().process_shapes()
     
     def convert_selective(self, changed_files=None):
         """
-        Convert GTFS data selectively based on which files have changed.
-        
-        Args:
-            changed_files: List of filenames that have changed (e.g., ['stop_times.txt'])
-                          If None, all files are considered changed (full conversion)
+        Convierte datos GTFS de forma selectiva basándose en un diff de archivos.
+        :param changed_files: Lista de nombres de archivos que han sufrido cambios.
+                             Si es None, se asume conversión completa.
         """
         print("=" * 60)
-        print("🚇 Metro Bilbao - Selective GTFS to JSON Converter")
+        print("🚇 Metro Bilbao - Convertidor Selectivo GTFS a JSON")
         print("=" * 60)
         
         self.changed_files = changed_files or []
         
-        # Load existing JSON to reuse static data
+        # Intentar cargar caché previa
         has_existing = self.load_existing_json()
         
         if not has_existing or not changed_files:
-            print("\n⚠️  No existing data or no changed files specified")
-            print("   Performing full conversion...")
+            print("\n⚠️  No hay caché previa o no se especificaron archivos modificados.")
+            print("   Realizando conversión completa de seguridad...")
             self.changed_files = self.STATIC_FILES + self.DYNAMIC_FILES
         else:
-            print(f"\n📝 Changed files: {', '.join(changed_files)}")
+            print(f"\n📝 Archivos modificados detectados: {', '.join(changed_files)}")
         
-        # Load all GTFS files
+        # Carga masiva de archivos fuente
         self.load_all()
         
-        # Process data (selectively reusing where possible)
-        print("\n⚙️  Processing GTFS data (selective mode)...")
+        # Orquestación del procesamiento (selectivo vs full)
+        print("\n⚙️  Transformando datos GTFS (Modo Selectivo)...")
         
-        # Static data - reuse if unchanged
+        # Datos Estáticos - Reutilización de caché
         self.process_stops()
         self.process_routes()
         self.process_shapes()
         
-        # Dynamic data - always reprocess
+        # Datos Dinámicos - Siempre requieren reconstrucción integral
         self.process_trips()
         self.calculate_service_numbers()
         self.process_calendar()
         
-        print("\n✅ Processing complete!")
+        print("\n✅ Transformación finalizada con éxito.")
         
-        # Save JSON
+        # Persistencia en disco
         self.save_json()
         
         print("\n" + "=" * 60)
-        print("✨ Selective conversion complete!")
+        print("✨ Proceso de conversión selectiva terminado.")
         print("=" * 60)
-
 
 if __name__ == '__main__':
     import sys
     
-    # Parse command line arguments
+    # Análisis de argumentos para determinar qué ha cambiado (usualmente enviado por CI/CD)
     changed_files = None
     if len(sys.argv) > 1:
         changed_files = sys.argv[1:]
-        print(f"Converting with changed files: {changed_files}")
+        print(f"Iniciando conversión restringida a: {changed_files}")
     
     converter = SelectiveGTFSConverter()
     
     if changed_files:
         converter.convert_selective(changed_files=changed_files)
     else:
-        # Full conversion if no files specified
+        # Caída en modo total si no hay parámetros
         converter.convert()

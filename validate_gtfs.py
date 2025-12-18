@@ -2,34 +2,45 @@ import csv
 import os
 from collections import defaultdict
 
-
 class GTFSValidator:
-    """Validates GTFS data integrity and consistency."""
+    """
+    GTFSValidator: Clase para la validación de integridad y consistencia de datos GTFS.
+    Realiza comprobaciones de referencias cruzadas, coherencia de horarios y
+    verificación de coordenadas geográficas.
+    """
     
     def __init__(self, gtfs_folder='gtfs'):
+        """
+        Inicializa el validador.
+        :param gtfs_folder: Carpeta que contiene los archivos .txt de GTFS.
+        """
         self.gtfs_folder = gtfs_folder
-        self.errors = []
-        self.warnings = []
-        self.data = {}
+        self.errors = []       # Errores críticos que invalidan los datos
+        self.warnings = []     # Advertencias sobre datos inusuales o incompletos
+        self.data = {}         # Almacén de archivos cargados en memoria
         
     def load_csv(self, filename):
-        """Load a CSV file and return its contents as a list of dictionaries."""
+        """
+        Carga un archivo CSV y lo transforma en una lista de diccionarios.
+        :param filename: Nombre del archivo .txt.
+        """
         filepath = os.path.join(self.gtfs_folder, filename)
         if not os.path.exists(filepath):
-            self.warnings.append(f"File not found: {filename}")
+            self.warnings.append(f"Archivo no encontrado: {filename}")
             return []
         
         try:
+            # Uso de utf-8-sig para manejar automáticamente posibles BOM
             with open(filepath, 'r', encoding='utf-8-sig') as f:
                 reader = csv.DictReader(f)
                 return list(reader)
         except (UnicodeDecodeError, csv.Error, OSError) as e:
-            self.errors.append(f"Error loading {filename}: {e}")
+            self.errors.append(f"Error al cargar {filename}: {e}")
             return []
     
     def load_all(self):
-        """Load all required GTFS files."""
-        print("📂 Loading GTFS files for validation...")
+        """Carga todos los archivos GTFS estándar necesarios para la validación."""
+        print("📂 Cargando archivos GTFS para validación...")
         self.data['agency'] = self.load_csv('agency.txt')
         self.data['stops'] = self.load_csv('stops.txt')
         self.data['routes'] = self.load_csv('routes.txt')
@@ -40,23 +51,23 @@ class GTFSValidator:
         self.data['calendar_dates'] = self.load_csv('calendar_dates.txt')
         
     def validate_references(self):
-        """Validate that all references between files are valid."""
-        print("\n🔗 Validating references between files...")
+        """Valida que todas las referencias (IDs) entre archivos sean coherentes (Foreign Keys)."""
+        print("\n🔗 Validando integridad de referencias cruzadas...")
         
-        # Build ID sets
+        # Construcción de conjuntos de IDs para búsqueda O(1)
         stop_ids = {stop['stop_id'] for stop in self.data['stops']}
         route_ids = {route['route_id'] for route in self.data['routes']}
         trip_ids = {trip['trip_id'] for trip in self.data['trips']}
         shape_ids = {shape['shape_id'] for shape in self.data['shapes']}
         service_ids = set()
         
-        # Collect service IDs from calendar and calendar_dates
+        # Consolidar service_ids de calendario y excepciones
         for cal in self.data['calendar']:
             service_ids.add(cal['service_id'])
         for cal_date in self.data['calendar_dates']:
             service_ids.add(cal_date['service_id'])
         
-        # Validate trip references
+        # Validación de referencias en el archivo 'trips.txt'
         invalid_route_refs = 0
         invalid_service_refs = 0
         invalid_shape_refs = 0
@@ -70,13 +81,13 @@ class GTFSValidator:
                 invalid_shape_refs += 1
         
         if invalid_route_refs > 0:
-            self.errors.append(f"Found {invalid_route_refs} trips with invalid route_id references")
+            self.errors.append(f"Se encontraron {invalid_route_refs} viajes con route_id inválido")
         if invalid_service_refs > 0:
-            self.errors.append(f"Found {invalid_service_refs} trips with invalid service_id references")
+            self.errors.append(f"Se encontraron {invalid_service_refs} viajes con service_id inválido")
         if invalid_shape_refs > 0:
-            self.warnings.append(f"Found {invalid_shape_refs} trips with invalid shape_id references")
+            self.warnings.append(f"Se encontraron {invalid_shape_refs} viajes con shape_id inexistente en shapes.txt")
         
-        # Validate stop_times references
+        # Validación de referencias en 'stop_times.txt'
         invalid_trip_refs = 0
         invalid_stop_refs = 0
         
@@ -87,18 +98,18 @@ class GTFSValidator:
                 invalid_stop_refs += 1
         
         if invalid_trip_refs > 0:
-            self.errors.append(f"Found {invalid_trip_refs} stop_times with invalid trip_id references")
+            self.errors.append(f"Se encontraron {invalid_trip_refs} stop_times con trip_id inválido")
         if invalid_stop_refs > 0:
-            self.errors.append(f"Found {invalid_stop_refs} stop_times with invalid stop_id references")
+            self.errors.append(f"Se encontraron {invalid_stop_refs} stop_times con stop_id inválido")
         
         if not self.errors:
-            print("✓ All references are valid")
+            print("✓ Integridad de referencias validada con éxito.")
         
     def validate_schedule_consistency(self):
-        """Validate that schedules are coherent."""
-        print("\n⏰ Validating schedule consistency...")
+        """Valida que los horarios sean lógicos y cronológicos."""
+        print("\n⏰ Validando consistencia de horarios y secuencias...")
         
-        # Group stop_times by trip
+        # Agrupar tiempos por viaje para análisis secuencial
         trips_stop_times = defaultdict(list)
         for st in self.data['stop_times']:
             trips_stop_times[st['trip_id']].append({
@@ -111,10 +122,10 @@ class GTFSValidator:
         invalid_times = 0
         
         for trip_id, stop_times in trips_stop_times.items():
-            # Sort by sequence
+            # Ordenar por secuencia lógica
             stop_times.sort(key=lambda x: x['seq'])
             
-            # Check sequence continuity
+            # Verificar continuidad de la secuencia
             expected_seq = 1
             for st in stop_times:
                 if st['seq'] != expected_seq:
@@ -122,11 +133,9 @@ class GTFSValidator:
                     break
                 expected_seq += 1
             
-            # Check time progression (times are in HH:MM:SS format as strings)
+            # Verificar progresión temporal (el tren no puede viajar al pasado)
             prev_departure = None
             for st in stop_times:
-                # Convert time strings to comparable format (simple string comparison works for HH:MM:SS)
-                # Note: GTFS times can exceed 24:00:00 for trips past midnight
                 if prev_departure and st['arrival'] and st['arrival'] < prev_departure:
                     invalid_times += 1
                     break
@@ -134,18 +143,18 @@ class GTFSValidator:
                     prev_departure = st['departure']
         
         if invalid_sequences > 0:
-            self.warnings.append(f"Found {invalid_sequences} trips with non-continuous stop sequences")
+            self.warnings.append(f"Se encontraron {invalid_sequences} viajes con secuencias de parada no continuas")
         if invalid_times > 0:
-            self.errors.append(f"Found {invalid_times} trips with non-monotonic times")
+            self.errors.append(f"Se encontraron {invalid_times} viajes con retrocesos temporales (no monotónicos)")
         
         if not self.errors and invalid_sequences == 0:
-            print("✓ Schedule consistency validated")
+            print("✓ Coherencia horaria validada.")
     
     def validate_coordinates(self):
-        """Validate that stop coordinates are reasonable."""
-        print("\n📍 Validating coordinates...")
+        """Verifica que las coordenadas de las estaciones sean razonables para la zona de Bilbao."""
+        print("\n📍 Validando coordenadas geográficas...")
         
-        # Metro Bilbao is roughly between these coordinates (with some buffer)
+        # Límites aproximados para el Gran Bilbao
         MIN_LAT, MAX_LAT = 42.9, 43.5
         MIN_LON, MAX_LON = -3.2, -2.6
         
@@ -161,13 +170,13 @@ class GTFSValidator:
                 invalid_coords += 1
         
         if invalid_coords > 0:
-            self.errors.append(f"Found {invalid_coords} stops with invalid coordinates")
+            self.errors.append(f"Se encontraron {invalid_coords} paradas con coordenadas fuera de rango o corruptas")
         else:
-            print("✓ All coordinates are valid")
+            print("✓ Todas las coordenadas son válidas para la zona de operación.")
     
     def validate_file_completeness(self):
-        """Check that all required files exist and are not empty."""
-        print("\n📋 Validating file completeness...")
+        """Comprueba la existencia y contenido de los archivos obligatorios."""
+        print("\n📋 Validando completitud de archivos...")
         
         required_files = ['stops.txt', 'routes.txt', 'trips.txt', 'stop_times.txt']
         optional_files = ['agency.txt', 'shapes.txt', 'calendar.txt', 'calendar_dates.txt']
@@ -175,41 +184,42 @@ class GTFSValidator:
         for filename in required_files:
             data = self.data.get(filename.replace('.txt', ''), [])
             if not data:
-                self.errors.append(f"Required file is missing or empty: {filename}")
+                self.errors.append(f"Archivo obligatorio ausente o vacío: {filename}")
         
         for filename in optional_files:
             data = self.data.get(filename.replace('.txt', ''), [])
             if not data:
-                self.warnings.append(f"Optional file is missing or empty: {filename}")
+                self.warnings.append(f"Archivo opcional ausente o vacío: {filename}")
         
         if not self.errors:
-            print("✓ All required files present")
+            print("✓ Presencia de archivos críticos confirmada.")
     
     def validate(self):
-        """Run all validation checks."""
+        """Orquesta la ejecución de todas las pruebas de validación."""
         print("=" * 60)
-        print("🔍 GTFS Data Validation")
+        print("🔍 Validación de Datos GTFS - Metro Bilbao")
         print("=" * 60)
         
         self.load_all()
         
+        # Lógica de auto-recuperación: si no hay datos, intentar descargarlos
         if not self.data.get('stops') and not self.data.get('trips'):
-            print("⚠️ No GTFS data found locally.")
-            print("🔄 Attempting to download and install latest GTFS data...")
+            print("⚠️ No se detectaron datos locales.")
+            print("🔄 Iniciando descarga automática de la última versión...")
             try:
                 from update_gtfs import update_gtfs
                 if update_gtfs():
-                    print("✅ Data successfully downloaded. Retrying validation...")
+                    print("✅ Datos descargados. Reintentando validación...")
                     self.load_all()
                 else:
-                    print("❌ Failed to download GTFS data. Validation aborted.")
+                    print("❌ Fallo en la descarga automática. Abortando.")
                     return False
             except ImportError:
-                 print("❌ Could not import update_gtfs module. validation aborted.")
+                 print("❌ Error de sistema: No se pudo importar update_gtfs.py.")
                  return False
 
         if not self.data.get('stops') and not self.data.get('trips'):
-             print("❌ Still no data found after update attempt.")
+             print("❌ Error: Los datos siguen ausentes tras el intento de descarga.")
              return False
         
         self.validate_file_completeness()
@@ -218,29 +228,28 @@ class GTFSValidator:
         self.validate_schedule_consistency()
         
         print("\n" + "=" * 60)
-        print("📊 Validation Summary")
+        print("📊 Resumen de Validación")
         print("=" * 60)
         
         if self.errors:
-            print(f"\n❌ Found {len(self.errors)} error(s):")
+            print(f"\n❌ Se detectaron {len(self.errors)} error(s) crítico(s):")
             for error in self.errors:
                 print(f"  • {error}")
         
         if self.warnings:
-            print(f"\n⚠️  Found {len(self.warnings)} warning(s):")
+            print(f"\n⚠️  Se detectaron {len(self.warnings)} advertencia(s):")
             for warning in self.warnings:
                 print(f"  • {warning}")
         
         if not self.errors and not self.warnings:
-            print("\n✅ All validation checks passed!")
+            print("\n✅ Validación superada: Todos los tests han pasado con éxito.")
             return True
         elif not self.errors:
-            print("\n✅ Validation passed with warnings")
+            print("\n✅ Validación superada con advertencias menores.")
             return True
         else:
-            print("\n❌ Validation failed")
+            print("\n❌ Validación fallida: Los datos contienen inconsistencias críticas.")
             return False
-
 
 if __name__ == '__main__':
     validator = GTFSValidator()

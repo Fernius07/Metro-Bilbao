@@ -1,41 +1,55 @@
 ﻿/**
- * Motor de simulación que calcula la posición exacta de los trenes.
- * Combina los horarios estáticos (GTFS) con ajustes dinámicos basados en datos en tiempo real.
+ * TrainSimulator: Motor lógico para el cálculo de posiciones ferroviarias.
+ * Implementa interpolación basada en tiempo, suavizado de movimiento (smoothing)
+ * y sincronización de desfases (offsets) con la API en tiempo real.
  */
 class TrainSimulator {
+    /**
+     * @param {Object} gtfsData - Datos GTFS procesados por GTFSParser.
+     * @param {Map} stationCodes - Mapeo de códigos para sincronización API.
+     */
     constructor(gtfsData, stationCodes) {
         this.gtfs = gtfsData;
-        this.activeTrains = new Map();
+        this.activeTrains = new Map();           // Trenes que están circulando actualmente
         this.stationCodes = stationCodes || new Map();
-        this.realTimeOffsets = new Map();
-        this.trainLengths = new Map();
-        this.tripStates = new Map(); // Rastrea último tiempo/estado para suavizado
+        this.realTimeOffsets = new Map();        // Retraso acumulado (segundos) por trayecto
+        this.trainLengths = new Map();           // Configuración del tren (4 o 5 coches)
+        this.tripStates = new Map();             // Persistencia de estado para suavizado visual
     }
     /**
-     * Calcula las nuevas posiciones de todos los trenes activos para el instante actual.
-     * Aplica lógica de suavizado para evitar saltos bruscos cuando el "offset" de tiempo real cambia.
-     * @param {Date} now - Hora actual de la simulación.
-     * @returns {Array} Lista de trenes con sus coordenadas y metadatos actualizados.
+     * Ejecuta un paso de simulación. Determina qué trenes deben estar activos
+     * y calcula su posición exacta aplicando lógica de suavizado temporal.
+     * @param {Date} now - Momento actual del sistema simulado.
+     * @returns {Array<Object>} Lista de trenes activos filtrados de nulos.
      */
     update(now) {
         const secondsFromMidnight = this.getSecondsFromMidnight(now);
         const dateStr = this.getDateString(now);
         const dayOfWeek = now.getDay();
+
+        // Determinar qué servicios (horarios) operan el día de hoy
         const activeServices = this.getActiveServices(dateStr, dayOfWeek);
         const currentTrips = [];
+
+        // Búsqueda de viajes activos en la ventana de tiempo actual
         for (const trip of this.gtfs.tripsById.values()) {
             if (!activeServices.has(trip.service_id)) continue;
+
             const offset = this.realTimeOffsets.get(trip.id) || 0;
             const adjustedTime = secondsFromMidnight - offset;
+
             const startTime = trip.stop_times[0].departure;
             const endTime = trip.stop_times[trip.stop_times.length - 1].arrival;
+
+            // Margen de 5 minutos antes/después para transiciones suaves en terminales
             if (adjustedTime >= startTime - 300 && adjustedTime <= endTime + 300) {
                 currentTrips.push(trip);
             }
         }
+
         const currentTimestamp = now.getTime();
 
-        // Limpiar estados de viajes antiguos
+        // Mantenimiento de la caché de estados de viaje
         const activeTripIds = new Set(currentTrips.map(t => t.id));
         for (const id of this.tripStates.keys()) {
             if (!activeTripIds.has(id)) {
@@ -48,7 +62,9 @@ class TrainSimulator {
             const offset = this.realTimeOffsets.get(trip.id) || 0;
             const targetAdjustedTime = secondsFromMidnight - offset;
 
-            // Lógica de Suavizado de Tiempo (Time Smoothing)
+            // --- Lógica de Suavizado de Tiempo (Time Smoothing) ---
+            // Evita que el tren "salte" en el mapa cuando la API reporta un cambio repentino
+            // en el retraso (ej: de +2 min a +4 min). El tren acelerará suavemente en lugar de teletransportarse.
             let finalTime = targetAdjustedTime;
 
             if (this.tripStates.has(trip.id)) {

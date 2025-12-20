@@ -1,8 +1,8 @@
 service_id,monday,tuesday,wednesday,thursday,friday,saturday,sunday,start_date,end_date
-fu2100h_invl_25_paratrennavidad.pex,1,0,0,0,0,0,0,20251219,20260119
-sempascnavinvl_25.pex,0,1,0,0,0,0,0,20251219,20260119
-nocbuviinvl_25.pex,0,0,1,0,0,0,0,20251219,20260119
-navidadinvl_25.pex,0,0,0,1,0,0,0,20251219,20260119
-sempascnavinvv_25.pex,0,0,0,0,1,0,0,20251219,20260119
-invs_25.pex,0,0,0,0,0,1,0,20251219,20260119
-invd_25.pex,0,0,0,0,0,0,1,20251219,20260119
+fu2100h_invl_25_paratrennavidad.pex,1,0,0,0,0,0,0,20251220,20260120
+obralut_bolvia2_invl_26.pex,0,1,0,0,0,0,0,20251220,20260120
+nocbuviinvl_25.pex,0,0,1,0,0,0,0,20251220,20260120
+navidadinvl_25.pex,0,0,0,1,0,0,0,20251220,20260120
+sempascnavinvv_25.pex,0,0,0,0,1,0,0,20251220,20260120
+invs_25.pex,0,0,0,0,0,1,0,20251220,20260120
+invd_25.pex,0,0,0,0,0,0,1,20251220,20260120

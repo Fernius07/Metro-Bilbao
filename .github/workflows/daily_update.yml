@@ -2,9 +2,9 @@ name: Daily GTFS Update
 
 on:
   schedule:
-    # Run at 03:30 UTC every day (04:30 CET / 05:30 CEST)
-    # Metro Bilbao updates at 04:00 CET, so this ensures we catch the update
-    - cron: '30 3 * * *'
+    # Run at 00:05 UTC every day
+    # Metro Bilbao updates at 00:05 CET, so this ensures we catch the update
+    - cron: '05 0 * * *'
   # Allow manual trigger
   workflow_dispatch:
 

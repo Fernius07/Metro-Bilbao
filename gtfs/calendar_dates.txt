@@ -1,6 +1,4 @@
 service_id,date,exception_type
-sempascnavinvv_25.pex,20260116,2
-obralut_bolvia2_invv_26.pex,20260116,1
 obralut_bolvia2_invl_26.pex,20260101,2
 annonuevoinvl_25.pex,20260101,1
 obralut_bolvia2_invl_26.pex,20260106,2
@@ -11,10 +9,12 @@ invs_25.pex,20260110,2
 bec2030hfitoinvs_25.pex,20260110,1
 obralut_bolvia2_invl_26.pex,20260112,2
 obralut_bolvia2_invl_25.pex,20260112,1
-sempascnavinvv_25.pex,20260109,2
+obralut_bolvia2_invv_26.pex,20260109,2
 bec2030hfitoinvv_25.pex,20260109,1
 obralut_bolvia2_invl_26.pex,20251230,2
 sempascnavinvl_25.pex,20251230,1
+obralut_bolvia2_invv_26.pex,20260102,2
+sempascnavinvv_25.pex,20260102,1
 obralut_bolvia2_invl_26.pex,20260108,2
 invl_25.pex,20260108,1
 invs_25.pex,20260117,2
@@ -25,8 +25,6 @@ obralut_bolvia2_invl_26.pex,20251229,2
 sempascnavinvl_25.pex,20251229,1
 obralut_bolvia2_invl_26.pex,20251231,2
 nocbuvisempascnavinvl_25.pex,20251231,1
-sempascnavinvv_25.pex,20260123,2
-obralut_bolvia2_invv_26.pex,20260123,1
 invd_25.pex,20260118,2
 obralut_bolvia2_invd_26.pex,20260118,1
 obralut_bolvia2_invl_26.pex,20260105,2

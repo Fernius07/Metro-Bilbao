@@ -17,5 +17,3 @@ obralut_bolvia2_invd_26.pex,20260104,2
 invd_25.pex,20260104,1
 obralut_bolvia2_invl_26.pex,20260105,2
 invv_25.pex,20260105,1
-obralut_bolvia2_invs_26.pex,20260103,2
-invs_25.pex,20260103,1

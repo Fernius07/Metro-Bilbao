@@ -1,3 +1,1 @@
 service_id,date,exception_type
-obralut_bolvia2_invl_26.pex,20260112,2
-obralut_bolvia2_invl_25.pex,20260112,1

@@ -1,5 +1,5 @@
 service_id,date,exception_type
 obralut_bolvia2_invl_26.pex,20260128,2
 fu2100hobralut_bolvia2_invl_26.pex,20260128,1
-obralut_bolvia2_invd_26.pex,20260201,2
-fu2100hobralut_bolvia2_invd_26.pex,20260201,1
+fu2100hobralut_bolvia2_invd_26.pex,20260208,2
+obralut_bolvia2_invd_26.pex,20260208,1

@@ -1,8 +1,6 @@
 service_id,date,exception_type
 obralutvia2_carninvd_26.pex,20260308,2
 obralutvia2_invd_26.pex,20260308,1
-obralutvia2_invl_26.pex,20260211,2
-fu2100hobralut_bolvia2_invl_26_v02.pex,20260211,1
 obralutvia2_invl_26.pex,20260212,2
 obralut_bolvia2_invl_26.pex,20260212,1
 obralutvia2_carninvs_26.pex,20260307,2

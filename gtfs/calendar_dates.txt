@@ -1,8 +1,6 @@
 service_id,date,exception_type
 obralutvia2_invl_26.pex,20260319,2
 obralutvia2_festinvl_26.pex,20260319,1
-obralutvia2_invd_26.pex,20260308,2
-8mobralutvia2_invd_26.pex,20260308,1
 obralutvia2_invl_26.pex,20260406,2
 obralutvia2_festinvl_26.pex,20260406,1
 obralutvia2_invl_26.pex,20260318,2

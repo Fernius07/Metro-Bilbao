@@ -580,6 +580,17 @@ trip_id,route_id,service_id,trip_headsign,direction_id,shape_id
 750374,MB,fu1830hobralutvia2invd_26.pex,Etxebarri,1,PLE_ETX
 750375,MB,fu1830hobralutvia2invd_26.pex,Plentzia,0,ETX_PLE
 750376,MB,fu1830hobralutvia2invd_26.pex,Etxebarri,1,PLE_ETX
+750377,MB,fu1830hobralutvia2invd_26.pex,Plentzia,0,ETX_PLE
+750378,MB,fu1830hobralutvia2invd_26.pex,Etxebarri,1,PLE_ETX
+750379,MB,fu1830hobralutvia2invd_26.pex,Plentzia,0,ETX_PLE
+750380,MB,fu1830hobralutvia2invd_26.pex,Etxebarri,1,PLE_ETX
+750381,MB,fu1830hobralutvia2invd_26.pex,Plentzia,0,ETX_PLE
+750382,MB,fu1830hobralutvia2invd_26.pex,Etxebarri,1,PLE_ETX
+750383,MB,fu1830hobralutvia2invd_26.pex,Plentzia,0,ETX_PLE
+750384,MB,fu1830hobralutvia2invd_26.pex,Etxebarri,1,PLE_ETX
+750385,MB,fu1830hobralutvia2invd_26.pex,Plentzia,0,ETX_PLE
+750386,MB,fu1830hobralutvia2invd_26.pex,Etxebarri,1,IBB_ETX
+750387,MB,fu1830hobralutvia2invd_26.pex,Ibarbengoa,0,ETX_IBB
 750388,MB,fu1830hobralutvia2invd_26.pex,Etxebarri,1,IBB_ETX
 750389,MB,fu1830hobralutvia2invd_26.pex,Ibarbengoa,0,ETX_IBB
 750390,MB,fu1830hobralutvia2invd_26.pex,Etxebarri,1,IBB_ETX
@@ -671,17 +682,6 @@ trip_id,route_id,service_id,trip_headsign,direction_id,shape_id
 750476,MB,fu1830hobralutvia2invd_26.pex,Kabiezes,0,BSR_KAB
 750477,MB,fu1830hobralutvia2invd_26.pex,Basauri,1,KAB_BSR
 750478,MB,fu1830hobralutvia2invd_26.pex,Kabiezes,0,BSR_KAB
-750377,MB,fu1830hobralutvia2invd_26.pex,Plentzia,0,ETX_PLE
-750378,MB,fu1830hobralutvia2invd_26.pex,Etxebarri,1,PLE_ETX
-750379,MB,fu1830hobralutvia2invd_26.pex,Plentzia,0,ETX_PLE
-750380,MB,fu1830hobralutvia2invd_26.pex,Etxebarri,1,PLE_ETX
-750381,MB,fu1830hobralutvia2invd_26.pex,Plentzia,0,ETX_PLE
-750382,MB,fu1830hobralutvia2invd_26.pex,Etxebarri,1,PLE_ETX
-750383,MB,fu1830hobralutvia2invd_26.pex,Plentzia,0,ETX_PLE
-750384,MB,fu1830hobralutvia2invd_26.pex,Etxebarri,1,PLE_ETX
-750385,MB,fu1830hobralutvia2invd_26.pex,Plentzia,0,ETX_PLE
-750386,MB,fu1830hobralutvia2invd_26.pex,Etxebarri,1,IBB_ETX
-750387,MB,fu1830hobralutvia2invd_26.pex,Ibarbengoa,0,ETX_IBB
 750480,MB,fu1830hobralutvia2invd_26.pex,Basauri,1,KAB_BSR
 750481,MB,fu1830hobralutvia2invd_26.pex,Kabiezes,0,BSR_KAB
 750482,MB,fu1830hobralutvia2invd_26.pex,Basauri,1,KAB_BSR
@@ -779,6 +779,8 @@ trip_id,route_id,service_id,trip_headsign,direction_id,shape_id
 750580,MB,obralutvia2_festinvl_26.pex,Basauri,1,KAB_BSR
 750581,MB,obralutvia2_festinvl_26.pex,Kabiezes,0,BSR_KAB
 750582,MB,obralutvia2_festinvl_26.pex,Basauri,1,KAB_BSR
+750583,MB,obralutvia2_festinvl_26.pex,Kabiezes,0,BSR_KAB
+750584,MB,obralutvia2_festinvl_26.pex,Basauri,1,KAB_BSR
 750585,MB,obralutvia2_festinvl_26.pex,Kabiezes,0,BSR_KAB
 750586,MB,obralutvia2_festinvl_26.pex,Basauri,1,KAB_BSR
 750587,MB,obralutvia2_festinvl_26.pex,Kabiezes,0,BSR_KAB
@@ -818,7 +820,6 @@ trip_id,route_id,service_id,trip_headsign,direction_id,shape_id
 750621,MB,obralutvia2_festinvl_26.pex,Plentzia,0,ETX_PLE
 750622,MB,obralutvia2_festinvl_26.pex,Etxebarri,1,PLE_ETX
 750623,MB,obralutvia2_festinvl_26.pex,Plentzia,0,ETX_PLE
-750583,MB,obralutvia2_festinvl_26.pex,Kabiezes,0,BSR_KAB
 750624,MB,obralutvia2_festinvl_26.pex,Etxebarri,1,PLE_ETX
 750625,MB,obralutvia2_festinvl_26.pex,Basauri,1,SIN_BSR
 750626,MB,obralutvia2_festinvl_26.pex,Kabiezes,0,BSR_KAB
@@ -874,7 +875,6 @@ trip_id,route_id,service_id,trip_headsign,direction_id,shape_id
 750676,MB,obralutvia2_festinvl_26.pex,Basauri,1,KAB_BSR
 750677,MB,obralutvia2_festinvl_26.pex,Kabiezes,0,BSR_KAB
 750678,MB,obralutvia2_festinvl_26.pex,Basauri,1,KAB_BSR
-750584,MB,obralutvia2_festinvl_26.pex,Basauri,1,KAB_BSR
 750679,MB,obralutvia2_festinvl_26.pex,Kabiezes,0,BSR_KAB
 750680,MB,obralutvia2_festinvl_26.pex,Basauri,1,KAB_BSR
 750681,MB,obralutvia2_festinvl_26.pex,Kabiezes,0,BSR_KAB
@@ -887,6 +887,8 @@ trip_id,route_id,service_id,trip_headsign,direction_id,shape_id
 750688,MB,obralutvia2_festinvl_26.pex,Basauri,1,KAB_BSR
 750689,MB,obralutvia2_festinvl_26.pex,Kabiezes,0,BSR_KAB
 750690,MB,obralutvia2_festinvl_26.pex,Basauri,1,KAB_BSR
+750691,MB,obralutvia2_festinvl_26.pex,Kabiezes,0,BSR_KAB
+750692,MB,obralutvia2_festinvl_26.pex,Basauri,1,KAB_BSR
 750693,MB,obralutvia2_festinvl_26.pex,Kabiezes,0,BSR_KAB
 750694,MB,obralutvia2_festinvl_26.pex,Basauri,1,KAB_BSR
 750695,MB,obralutvia2_festinvl_26.pex,Kabiezes,0,BSR_KAB
@@ -933,7 +935,6 @@ trip_id,route_id,service_id,trip_headsign,direction_id,shape_id
 750736,MB,obralutvia2_festinvl_26.pex,Kabiezes,0,BSR_KAB
 750737,MB,obralutvia2_festinvl_26.pex,Basauri,1,KAB_BSR
 750738,MB,obralutvia2_festinvl_26.pex,Kabiezes,0,BSR_KAB
-750691,MB,obralutvia2_festinvl_26.pex,Kabiezes,0,BSR_KAB
 750739,MB,obralutvia2_festinvl_26.pex,Basauri,1,KAB_BSR
 750740,MB,obralutvia2_festinvl_26.pex,Etxebarri,1,IBB_ETX
 750741,MB,obralutvia2_festinvl_26.pex,Ibarbengoa,0,ETX_IBB
@@ -970,7 +971,6 @@ trip_id,route_id,service_id,trip_headsign,direction_id,shape_id
 750772,MB,obralutvia2_festinvl_26.pex,Basauri,1,KAB_BSR
 750773,MB,obralutvia2_festinvl_26.pex,Kabiezes,0,BSR_KAB
 750774,MB,obralutvia2_festinvl_26.pex,Basauri,1,KAB_BSR
-750692,MB,obralutvia2_festinvl_26.pex,Basauri,1,KAB_BSR
 750775,MB,obralutvia2_festinvl_26.pex,Kabiezes,0,BSR_KAB
 750776,MB,obralutvia2_festinvl_26.pex,Basauri,1,KAB_BSR
 750777,MB,obralutvia2_festinvl_26.pex,Etxebarri,1,IBB_ETX

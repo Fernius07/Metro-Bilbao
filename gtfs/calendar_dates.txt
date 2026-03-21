@@ -7,8 +7,6 @@ obralutvia2_invs_26.pex,20260328,2
 obralutvia2_chmarzoinvs_26.pex,20260328,1
 obralutvia2_invd_26.pex,20260329,2
 korrikaobralutvia2_invd_26.pex,20260329,1
-obralutvia2_invl_26.pex,20260319,2
-obralutvia2_festinvl_26.pex,20260319,1
 obralutvia2_invv_26.pex,20260403,2
 obralutvia2_festinvcorto_26.pex,20260403,1
 obralutvia2_invv_26.pex,20260410,2

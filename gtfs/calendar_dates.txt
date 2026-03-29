@@ -1,8 +1,6 @@
 service_id,date,exception_type
 obralutvia2_invl_26.pex,20260409,2
 obralutvia2_sempascnavinvl_26.pex,20260409,1
-obralutvia2_invs_26.pex,20260328,2
-obralutvia2_chmarzoinvs_26.pex,20260328,1
 obralutvia2_invd_26.pex,20260329,2
 korrikaobralutvia2_invd_26.pex,20260329,1
 obralutvia2_invv_26.pex,20260403,2

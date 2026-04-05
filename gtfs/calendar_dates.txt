@@ -7,8 +7,6 @@ obralutvia2_invl_26.pex,20260407,2
 obralutvia2_sempascnavinvl_26.pex,20260407,1
 obralutvia2_invl_26.pex,20260408,2
 obralutvia2_sempascnavinvl_26.pex,20260408,1
-obralutvia2_invs_26.pex,20260404,2
-obralutvia2_festinvlargo_26.pex,20260404,1
 obralutvia2_invl_26.pex,20260406,2
 obralutvia2_festinvl_26.pex,20260406,1
 obralutvia2_invs_26.pex,20260418,2

@@ -3,5 +3,3 @@ obralutvia2_invs_26.pex,20260418,2
 becot_obralutvia2_invs_26.pex,20260418,1
 obralutvia2_invl_26.pex,20260430,2
 obralutvia2_invv_26.pex,20260430,1
-obralutvia2_invd_26.pex,20260412,2
-fu2100hobralutvia2_invd_26.pex,20260412,1

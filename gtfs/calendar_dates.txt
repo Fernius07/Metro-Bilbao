@@ -7,5 +7,3 @@ obralutvia2_invs_26.pex,20260509,2
 becorejaobralutvia2_invs_26.pex,20260509,1
 obralutvia2_invd_26.pex,20260503,2
 becamaiaobralutvia2_invd_26_v02.pex,20260503,1
-obralutvia2_invl_26.pex,20260430,2
-obralutvia2_invv_26.pex,20260430,1

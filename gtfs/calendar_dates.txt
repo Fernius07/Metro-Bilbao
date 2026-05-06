@@ -5,3 +5,5 @@ obralutvia2_invv_26.pex,20260605,2
 obralutvia2_invvlargo_26.pex,20260605,1
 obralutvia2_invs_26.pex,20260509,2
 becorejaobralutvia2_invs_26.pex,20260509,1
+obralutvia2_invs_26.pex,20260606,2
+obralutvia2_invspostvlargo_26.pex,20260606,1

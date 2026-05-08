@@ -1,9 +1,15 @@
 service_id,date,exception_type
 obralutvia2_invd_26.pex,20260510,2
 fu1615hbecorejaobralutvia2_invd_26.pex,20260510,1
+obralutvia2_invv_26.pex,20260515,2
+becfitoobralutvia2_invv_26.pex,20260515,1
+obralutvia2_invs_26.pex,20260516,2
+becfitoobralutvia2_invs_26.pex,20260516,1
 obralutvia2_invv_26.pex,20260605,2
 obralutvia2_invvlargo_26.pex,20260605,1
 obralutvia2_invs_26.pex,20260509,2
 becorejaobralutvia2_invs_26.pex,20260509,1
 obralutvia2_invs_26.pex,20260606,2
 obralutvia2_invspostvlargo_26.pex,20260606,1
+obralutvia2_invd_26.pex,20260517,2
+fu1900hobralutvia2_invd_26.pex,20260517,1

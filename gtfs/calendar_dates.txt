@@ -3,8 +3,6 @@ obralutvia2_invvlargo_26.pex,20260529,2
 obralutvia2_invv_26.pex,20260529,1
 obralutvia2_invvlargo_26.pex,20260522,2
 rugbyobralutvia2_invv_26.pex,20260522,1
-obralutvia2_invspostvlargo_26.pex,20260516,2
-becfitoobralutvia2_invs_26.pex,20260516,1
 obralutvia2_invspostvlargo_26.pex,20260530,2
 obralutvia2_invs_26.pex,20260530,1
 obralutvia2_invspostvlargo_26.pex,20260523,2

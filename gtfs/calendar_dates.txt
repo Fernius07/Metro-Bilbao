@@ -7,5 +7,3 @@ obralutvia2_invspostvlargo_26.pex,20260530,2
 obralutvia2_invs_26.pex,20260530,1
 obralutvia2_invspostvlargo_26.pex,20260523,2
 rugbyobralutvia2_invs_26.pex,20260523,1
-obralutvia2_invd_26.pex,20260517,2
-fu1900hobralutvia2_invd_26.pex,20260517,1

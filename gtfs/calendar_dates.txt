@@ -1,8 +1,6 @@
 service_id,date,exception_type
 obralutvia2_invvlargo_26.pex,20260529,2
 becmegadethobralutvia2_invv_26.pex,20260529,1
-obralutvia2_invvlargo_26.pex,20260522,2
-rugbyobralutvia2_invv_26.pex,20260522,1
 obralutvia2_invspostvlargo_26.pex,20260530,2
 becultimofilaobralutvia2_invs_26_v02.pex,20260530,1
 obralutvia2_invspostvlargo_26.pex,20260620,2

@@ -7,5 +7,3 @@ obralutvia2_invspostvlargo_26.pex,20260620,2
 obralutvia2_invs_26.pex,20260620,1
 obralutvia2_invd_26.pex,20260531,2
 ibilaldiaobralutvia2_invd_26.pex,20260531,1
-obralutvia2_invspostvlargo_26.pex,20260523,2
-rugbyobralutvia2_invs_26.pex,20260523,1

@@ -1,6 +1,4 @@
 service_id,date,exception_type
-obralutvia2_invspostvlargo_26.pex,20260530,2
-becultimofilaobralutvia2_invs_26_v02.pex,20260530,1
 obralutvia2_invvlargo_26.pex,20260605,2
 becultimofilaobralutvia2_invvlargo_26.pex,20260605,1
 obralutvia2_invspostvlargo_26.pex,20260620,2

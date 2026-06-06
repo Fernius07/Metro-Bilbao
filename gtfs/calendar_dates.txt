@@ -1,12 +1,12 @@
 service_id,date,exception_type
+obralutvia2_invl_26.pex,20260706,2
+obralutvia2_ver1l_26.pex,20260706,1
 obralutvia2_invvlargo_26.pex,20260703,2
 obralutvia2_ver1v_26.pex,20260703,1
 obralutvia2_invspostvlargo_26.pex,20260704,2
 obralutvia2_ver1s_26.pex,20260704,1
 obralutvia2_invl_26.pex,20260701,2
 obralutvia2_ver1l_26.pex,20260701,1
-obralutvia2_invvlargo_26.pex,20260605,2
-becultimofilaobralutvia2_invvlargo_26.pex,20260605,1
 obralutvia2_invspostvlargo_26.pex,20260620,2
 obralutvia2_invs_26.pex,20260620,1
 obralutvia2_invl_26.pex,20260702,2

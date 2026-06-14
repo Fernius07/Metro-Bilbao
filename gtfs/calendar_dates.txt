@@ -9,14 +9,14 @@ obralutvia2_ver1d_26.pex,20260628,2
 obralutvia2_invd_26.pex,20260628,1
 obralutvia2_invl_26.pex,20260701,2
 obralutvia2_ver1l_26.pex,20260701,1
+obralutvia2_invl_26.pex,20260714,2
+obralutvia2_ver1l_26.pex,20260714,1
 obralutvia2_ver1s_26.pex,20260620,2
 ope_zobralutv2_noblancafieleiinvspostvlargo_26.pex,20260620,1
 obralutvia2_invl_26.pex,20260702,2
 obralutvia2_ver1l_26.pex,20260702,1
 obralutvia2_invl_26.pex,20260709,2
 obralutvia2_ver1l_26.pex,20260709,1
-obralutvia2_ver1s_26.pex,20260613,2
-obralutvia2_invspostvlargo_26.pex,20260613,1
 obralutvia2_invl_26.pex,20260707,2
 obralutvia2_ver1l_26.pex,20260707,1
 obralutvia2_ver1d_26.pex,20260614,2

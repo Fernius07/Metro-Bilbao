@@ -13,8 +13,6 @@ obralutvia2_invl_26.pex,20260714,2
 obralutvia2_ver1l_26.pex,20260714,1
 obralutvia2_ver1s_26.pex,20260620,2
 ope_zobralutv2_noblancafieleiinvspostvlargo_26.pex,20260620,1
-obralutvia2_ver1l_26.pex,20260617,2
-obralutvia2_invl_26.pex,20260617,1
 obralutvia2_ver1l_26.pex,20260618,2
 obralutvia2_invl_26.pex,20260618,1
 obralutvia2_invl_26.pex,20260707,2

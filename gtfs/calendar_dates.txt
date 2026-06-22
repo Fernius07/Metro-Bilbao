@@ -15,7 +15,5 @@ obralutvia2_ver1l_26.pex,20260624,2
 obralutvia2_sanjuanpostinvl_26.pex,20260624,1
 obralutvia2_ver1v_26.pex,20260626,2
 obralutvia2_fiesopinvvlargo_26.pex,20260626,1
-obralutvia2_ver1d_26.pex,20260621,2
-ope_obralutvia2_noblancafieleiinvd_26.pex,20260621,1
 obralutvia2_ver1d_26.pex,20260628,2
 obralutvia2_fiesopinvd_26.pex,20260628,1

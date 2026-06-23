@@ -5,8 +5,6 @@ obralutvia2_ver1s_26.pex,20260627,2
 etsobralutvia2_fiesopinvspostvlargo_26.pex,20260627,1
 obralutvia2_ver1l_26.pex,20260625,2
 obralutvia2_invl_26.pex,20260625,1
-obralutvia2_ver1l_26.pex,20260622,2
-obralutvia2_invl_26.pex,20260622,1
 obralutvia2_ver1l_26.pex,20260630,2
 obralutvia2_invl_26.pex,20260630,1
 obralutvia2_ver1l_26.pex,20260629,2

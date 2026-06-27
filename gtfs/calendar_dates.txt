@@ -9,7 +9,5 @@ obralutvia2_ver1l_26.pex,20260629,2
 obralutvia2_invl_26.pex,20260629,1
 obralutvia2_ver1v_26.pex,20260703,2
 becbigsoundobralutvia2_ver1v_26.pex,20260703,1
-obralutvia2_ver1v_26.pex,20260626,2
-obralutvia2_fiesopinvvlargo_26.pex,20260626,1
 obralutvia2_ver1d_26.pex,20260628,2
 obralutvia2_fiesopinvd_26.pex,20260628,1

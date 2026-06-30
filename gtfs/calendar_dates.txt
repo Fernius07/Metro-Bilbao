@@ -3,7 +3,7 @@ obralutvia2_ver1l_26.pex,20260630,2
 obralutvia2_invl_26.pex,20260630,1
 obralutvia2_ver1s_26.pex,20260704,2
 becbigsoundobralutvia2_ver1s_26.pex,20260704,1
-obralutvia2_ver1l_26.pex,20260629,2
-obralutvia2_invl_26.pex,20260629,1
+obralutvia2_ver1l_26.pex,20260730,2
+obralutvia2_ver1v_26.pex,20260730,1
 obralutvia2_ver1v_26.pex,20260703,2
 becbigsoundobralutvia2_ver1v_26.pex,20260703,1

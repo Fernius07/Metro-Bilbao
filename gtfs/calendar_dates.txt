@@ -1,6 +1,6 @@
 service_id,date,exception_type
-obralutvia2_ver1l_26.pex,20260630,2
-obralutvia2_invl_26.pex,20260630,1
+obralutvia2_ver1s_26.pex,20260801,2
+obralutvia2_ver2s_26.pex,20260801,1
 obralutvia2_ver1s_26.pex,20260704,2
 becbigsoundobralutvia2_ver1s_26.pex,20260704,1
 obralutvia2_ver1l_26.pex,20260730,2

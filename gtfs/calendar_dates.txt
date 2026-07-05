@@ -11,10 +11,10 @@ obralutvia2_fiebarver1s_26.pex,20260801,2
 obralutvia2_fiealgver2s_26.pex,20260801,1
 obralutvia2_ver1l_26.pex,20260804,2
 obralutvia2_ver2l_26.pex,20260804,1
-obralutvia2_fiebarver1s_26.pex,20260704,2
-becbigsoundobralutvia2_ver1s_26.pex,20260704,1
 obralutvia2_fiebarver1s_26.pex,20260725,2
 obralutvia2_ver1s_26.pex,20260725,1
+obralutvia2_ver1l_26.pex,20260805,2
+obralutvia2_ver2l_26.pex,20260805,1
 obralutvia2_ver1l_26.pex,20260709,2
 obralutvia2_bbklivever1l_26.pex,20260709,1
 obralutvia2_ver1l_26.pex,20260730,2

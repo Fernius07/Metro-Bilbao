@@ -1,6 +1,8 @@
 service_id,date,exception_type
 obralutvia2_ver1v_26.pex,20260710,2
 obralutvia2_bbklivepostver1v_26.pex,20260710,1
+obralutvia2_ver1l_26.pex,20260806,2
+obralutvia2_ver2l_26.pex,20260806,1
 obralutvia2_fiebarver1d_26.pex,20260802,2
 obralutvia2_fiealgver2d_26.pex,20260802,1
 obralutvia2_fiebarver1d_26.pex,20260726,2
@@ -21,5 +23,3 @@ obralutvia2_ver1l_26.pex,20260730,2
 obralutvia2_ver1v_26.pex,20260730,1
 obralutvia2_ver1v_26.pex,20260731,2
 obralutvia2_festverlargo_26.pex,20260731,1
-obralutvia2_fiebarver1d_26.pex,20260705,2
-obralutvia2_ver1d_26.pex,20260705,1

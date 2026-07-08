@@ -25,3 +25,5 @@ obralutvia2_ver1v_26.pex,20260731,2
 obralutvia2_festverlargo_26.pex,20260731,1
 obralutvia2_ver1v_26.pex,20260807,2
 obralutvia2_ver2v_26.pex,20260807,1
+obralutvia2_fiebarver1s_26.pex,20260808,2
+obralutvia2_ver2s_26.pex,20260808,1

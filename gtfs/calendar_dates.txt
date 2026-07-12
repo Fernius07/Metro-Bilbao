@@ -17,6 +17,8 @@ obralutvia2_fiebarver1s_26.pex,20260801,2
 obralutvia2_fiealgver2s_26.pex,20260801,1
 obralutvia2_ver1l_26.pex,20260804,2
 obralutvia2_ver2l_26.pex,20260804,1
+obralutvia2_ver1l_26.pex,20260812,2
+obralutvia2_ver2l_26.pex,20260812,1
 obralutvia2_ver1l_26.pex,20260715,2
 becbeeleobralutvia2_ver1l_26.pex,20260715,1
 obralutvia2_fiebarver1s_26.pex,20260725,2

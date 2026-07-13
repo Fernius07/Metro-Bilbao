@@ -5,6 +5,8 @@ obralutvia2_fiebarver1d_26.pex,20260809,2
 obralutvia2_ver2d_26.pex,20260809,1
 obralutvia2_ver1l_26.pex,20260806,2
 obralutvia2_ver2l_26.pex,20260806,1
+obralutvia2_ver1l_26.pex,20260813,2
+obralutvia2_ver2l_26.pex,20260813,1
 obralutvia2_fiebarver1d_26.pex,20260802,2
 obralutvia2_fiealgver2d_26.pex,20260802,1
 obralutvia2_fiebarver1d_26.pex,20260726,2

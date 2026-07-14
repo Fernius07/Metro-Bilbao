@@ -1,6 +1,8 @@
 service_id,date,exception_type
 obralutvia2_ver1l_26.pex,20260810,2
 obralutvia2_ver2l_26.pex,20260810,1
+obralutvia2_ver1v_26.pex,20260814,2
+ver2v_26.pex,20260814,1
 obralutvia2_fiebarver1d_26.pex,20260809,2
 obralutvia2_ver2d_26.pex,20260809,1
 obralutvia2_ver1l_26.pex,20260806,2

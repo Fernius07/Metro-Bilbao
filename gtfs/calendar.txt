@@ -1,6 +1,5 @@
 service_id,monday,tuesday,wednesday,thursday,friday,saturday,sunday,start_date,end_date
-obralutvia2_ver2l_26.pex,1,1,0,1,0,0,0,20260722,20260822
-obralutvia2_ver1l_26.pex,0,0,1,0,0,0,0,20260722,20260822
-ver2v_26.pex,0,0,0,0,1,0,0,20260722,20260822
-paellasobralutvia2_vers_26.pex,0,0,0,0,0,1,0,20260722,20260822
-obralutvia2_ver1d_26.pex,0,0,0,0,0,0,1,20260722,20260822
+obralutvia2_ver2l_26.pex,1,1,1,1,0,0,0,20260723,20260823
+ver2v_26.pex,0,0,0,0,1,0,0,20260723,20260823
+paellasobralutvia2_vers_26.pex,0,0,0,0,0,1,0,20260723,20260823
+obralutvia2_ver1d_26.pex,0,0,0,0,0,0,1,20260723,20260823

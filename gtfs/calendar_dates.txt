@@ -7,6 +7,8 @@ obralutvia2_ver1d_26.pex,20260809,2
 obralutvia2_ver2d_26.pex,20260809,1
 obralutvia2_ver2l_26.pex,20260729,2
 obralutvia2_ver1l_26.pex,20260729,1
+obralutvia2_ver2l_26.pex,20260825,2
+astnag2m_26.pex,20260825,1
 obralutvia2_ver1d_26.pex,20260802,2
 obralutvia2_fiealgver2d_26.pex,20260802,1
 paellasobralutvia2_vers_26.pex,20260815,2
@@ -29,8 +31,6 @@ obralutvia2_ver2l_26.pex,20260730,2
 obralutvia2_ver1v_26.pex,20260730,1
 obralutvia2_ver2l_26.pex,20260817,2
 ver2l_26.pex,20260817,1
-ver2v_26.pex,20260724,2
-obralutvia2_ver1v_26.pex,20260724,1
 ver2v_26.pex,20260731,2
 obralutvia2_festverlargo_26.pex,20260731,1
 ver2v_26.pex,20260807,2

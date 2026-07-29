@@ -1,8 +1,6 @@
 service_id,date,exception_type
 obralutvia2_ver2l_26.pex,20260824,2
 astnag2l_26.pex,20260824,1
-obralutvia2_ver2l_26.pex,20260728,2
-obralutvia2_ver1l_26.pex,20260728,1
 obralutvia2_fiealgver2d_26.pex,20260809,2
 obralutvia2_ver2d_26.pex,20260809,1
 obralutvia2_ver2l_26.pex,20260825,2
@@ -37,5 +35,7 @@ ver2v_26.pex,20260807,2
 obralutvia2_ver2v_26.pex,20260807,1
 obralutvia2_fiealgver2s_26.pex,20260822,2
 astnag1s_26.pex,20260822,1
+obralutvia2_fiealgver2s_26.pex,20260829,2
+astnag2s_26.pex,20260829,1
 obralutvia2_fiealgver2s_26.pex,20260808,2
 obralutvia2_ver2s_26.pex,20260808,1

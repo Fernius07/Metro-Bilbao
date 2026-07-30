@@ -5,12 +5,12 @@ obralutvia2_fiealgver2d_26.pex,20260809,2
 obralutvia2_ver2d_26.pex,20260809,1
 obralutvia2_ver2l_26.pex,20260825,2
 astnag2m_26.pex,20260825,1
-obralutvia2_ver2l_26.pex,20260729,2
-obralutvia2_ver1l_26.pex,20260729,1
 ver2v_26.pex,20260828,2
 astnag2v_26.pex,20260828,1
 obralutvia2_fiealgver2s_26.pex,20260815,2
 festverlargo_26.pex,20260815,1
+obralutvia2_fiealgver2d_26.pex,20260830,2
+astnag2d_26.pex,20260830,1
 obralutvia2_fiealgver2d_26.pex,20260823,2
 astnag1d_26.pex,20260823,1
 obralutvia2_fiealgver2d_26.pex,20260816,2

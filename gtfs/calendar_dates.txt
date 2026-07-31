@@ -11,6 +11,8 @@ obralutvia2_fiealgver2s_26.pex,20260815,2
 festverlargo_26.pex,20260815,1
 obralutvia2_fiealgver2d_26.pex,20260830,2
 astnag2d_26.pex,20260830,1
+obralutvia2_ver2l_26.pex,20260831,2
+ver2l_26.pex,20260831,1
 obralutvia2_fiealgver2d_26.pex,20260823,2
 astnag1d_26.pex,20260823,1
 obralutvia2_fiealgver2d_26.pex,20260816,2
@@ -25,8 +27,6 @@ obralutvia2_ver2l_26.pex,20260818,2
 ver2l_26.pex,20260818,1
 obralutvia2_ver2l_26.pex,20260820,2
 ver2l_26.pex,20260820,1
-obralutvia2_ver2l_26.pex,20260730,2
-obralutvia2_ver1v_26.pex,20260730,1
 obralutvia2_ver2l_26.pex,20260817,2
 ver2l_26.pex,20260817,1
 ver2v_26.pex,20260731,2

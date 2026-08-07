@@ -27,6 +27,8 @@ eclipseobralutvia2_ver2l_26.pex,20260826,2
 astnag2x_26.pex,20260826,1
 obralutvia2_ver2s_26.pex,20260905,2
 obranegvia1_invspostvlargo_26.pex,20260905,1
+ver2l_26.pex,20260907,2
+obranegvia1_invl_26_v02.pex,20260907,1
 eclipseobralutvia2_ver2l_26.pex,20260819,2
 ver2l_26.pex,20260819,1
 obralutvia2_ver2l_26.pex,20260827,2

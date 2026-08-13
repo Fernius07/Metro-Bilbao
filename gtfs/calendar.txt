@@ -1,6 +1,6 @@
 service_id,monday,tuesday,wednesday,thursday,friday,saturday,sunday,start_date,end_date
-ver2l_26.pex,1,0,0,0,0,0,0,20260811,20260911
-obranegvia1_invl_26_v02.pex,0,1,1,1,0,0,0,20260811,20260911
-ver2v_26.pex,0,0,0,0,1,0,0,20260811,20260911
-festverlargo_26.pex,0,0,0,0,0,1,0,20260811,20260911
-ver2d_26.pex,0,0,0,0,0,0,1,20260811,20260911
+ver2l_26.pex,1,0,0,0,0,0,0,20260812,20260912
+obranegvia1_invl_26_v02.pex,0,1,1,1,0,0,0,20260812,20260912
+ver2v_26.pex,0,0,0,0,1,0,0,20260812,20260912
+obranegvia1_invspostvlargo_26.pex,0,0,0,0,0,1,0,20260812,20260912
+ver2d_26.pex,0,0,0,0,0,0,1,20260812,20260912

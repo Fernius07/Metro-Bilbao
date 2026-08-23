@@ -15,8 +15,6 @@ obranegvia1_invd_26.pex,20260823,2
 astnag1d_26.pex,20260823,1
 obranegvia1_invl_26_v02.pex,20260826,2
 astnag2x_26.pex,20260826,1
-obranegvia1_invvlargo_26_v02.pex,20260821,2
-ver2v_26.pex,20260821,1
 obranegvia1_invl_26_v02.pex,20260827,2
 astnag2j_26.pex,20260827,1
 obranegvia1_invspostvlargo_26.pex,20260829,2

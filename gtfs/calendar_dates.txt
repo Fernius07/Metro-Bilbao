@@ -15,3 +15,5 @@ obranegvia1_invv_26_v02.pex,20260918,2
 becaitanaobranegvia1_invvlargo_26_v02.pex,20260918,1
 etsobranegvia1_invspostvlargo_26.pex,20260926,2
 obranegvia1_fieareinvspostvlargo_26.pex,20260926,1
+obranegvia1_invd_26.pex,20261011,2
+obranegvia1_fiebsrinvdcorto_26.pex,20261011,1

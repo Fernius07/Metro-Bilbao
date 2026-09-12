@@ -1,6 +1,6 @@
 service_id,date,exception_type
-obranegvia1_invv_26_v02.pex,20260911,2
-celtascortosobranegvia1_invvlargo_26_v02.pex,20260911,1
+obranegvia1_invl_26_v02.pex,20261012,2
+obranegvia1_festinvl_26.pex,20261012,1
 etsobranegvia1_invspostvlargo_26.pex,20261003,2
 obranegvia1_invs_26.pex,20261003,1
 obranegvia1_invv_26_v02.pex,20260925,2

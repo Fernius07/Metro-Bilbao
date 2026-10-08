@@ -19,7 +19,5 @@ obranegvia2_invs_26.pex,20261010,2
 obranegvia1_fiebsrinvs_26.pex,20261010,1
 obranegvia2_invd_26.pex,20261018,2
 becmelendiobranegvia2_fiebsrinvd_26.pex,20261018,1
-obranegvia2_invl_26.pex,20261007,2
-obranegvia1_invl_26_v02.pex,20261007,1
 obranegvia2_invd_26.pex,20261011,2
 obranegvia1_fiebsrinvdcorto_26.pex,20261011,1

@@ -9,8 +9,6 @@ obranegvia2_invl_26.pex,20261015,2
 obranegvia1_invl_26_v02.pex,20261015,1
 obranegvia2_invs_26.pex,20261024,2
 obranegvia2_choctubreinvs_26.pex,20261024,1
-obranegvia2_invv_26.pex,20261009,2
-obranegvia1_invv_26_v02.pex,20261009,1
 obranegvia2_invs_26.pex,20261017,2
 becmelendirunningobranegvia2_fiebsrinvs_26.pex,20261017,1
 obranegvia2_invs_26.pex,20261010,2

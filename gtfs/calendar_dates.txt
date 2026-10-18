@@ -5,8 +5,6 @@ obranegvia2_invd_26.pex,20261025,2
 fu1400hobranegvia2_invd_26.pex,20261025,1
 obranegvia2_invv_26.pex,20261023,2
 becuraberebideanobranegvia2_invv_26.pex,20261023,1
-obranegvia2_invs_26.pex,20261017,2
-becmelendirunningobranegvia2_fiebsrinvs_26.pex,20261017,1
 obranegvia2_invd_26.pex,20261018,2
 becmelendiobranegvia2_fiebsrinvd_26.pex,20261018,1
 obranegvia2_invl_26.pex,20261022,2

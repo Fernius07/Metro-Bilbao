@@ -9,5 +9,3 @@ obranegvia2_invv_26.pex,20261023,2
 becuraberebideanobranegvia2_invv_26.pex,20261023,1
 obranegvia2_invs_26.pex,20261031,2
 halloweenobranegvia2_invs_26.pex,20261031,1
-obranegvia2_invl_26.pex,20261022,2
-becuraberebideanobranegvia2_invl_26.pex,20261022,1

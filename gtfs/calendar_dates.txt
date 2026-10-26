@@ -1,6 +1,4 @@
 service_id,date,exception_type
-obranegvia2_invd_26.pex,20261025,2
-fu1400hobranegvia2_invd_26.pex,20261025,1
 obranegvia2_invd_26.pex,20261101,2
 fu2100hposthalloweenobranegvia2_invd_26.pex,20261101,1
 obranegvia2_invs_26.pex,20261031,2

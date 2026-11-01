@@ -1,7 +1,5 @@
 service_id,date,exception_type
 obranegvia2_invd_26.pex,20261101,2
 fu2100hposthalloweenobranegvia2_invd_26.pex,20261101,1
-obranegvia2_invs_26.pex,20261031,2
-halloweenobranegvia2_invs_26.pex,20261031,1
 obranegvia2_invd_26.pex,20261108,2
 bectrendfestivalxxlobranegvia2_invd_26.pex,20261108,1

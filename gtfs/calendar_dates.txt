@@ -5,5 +5,7 @@ obranegvia2_invl_26.pex,20261207,2
 obranegvia2_invv_26.pex,20261207,1
 obranegvia2_invv_26.pex,20261113,2
 becbryanadamsobranegvia2_invv_26.pex,20261113,1
+obranegvia2_invl_26.pex,20261208,2
+obranegvia2_festinvl_26.pex,20261208,1
 obranegvia2_invd_26.pex,20261108,2
 bectrendfestivalxxlobranegvia2_invd_26.pex,20261108,1

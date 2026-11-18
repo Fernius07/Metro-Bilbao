@@ -1,4 +1,6 @@
 service_id,date,exception_type
+obranegvia2_invv_26.pex,20261218,2
+invvlargo_26.pex,20261218,1
 obranegvia2_invv_26.pex,20261211,2
 obranegvia2_invvlargo_26.pex,20261211,1
 obranegvia2_invl_26.pex,20261207,2

@@ -19,5 +19,7 @@ obranegvia2_invl_26.pex,20261208,2
 obranegvia2_festinvl_26.pex,20261208,1
 obranegvia2_invl_26.pex,20261221,2
 invl_26.pex,20261221,1
+obranegvia2_invl_26.pex,20261224,2
+invl_26.pex,20261224,1
 obranegvia2_invd_26.pex,20261220,2
 invd_26.pex,20261220,1

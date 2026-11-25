@@ -5,6 +5,8 @@ obranegvia2_invv_26.pex,20261211,2
 obranegvia2_invvlargo_26.pex,20261211,1
 obranegvia2_invl_26.pex,20261207,2
 obranegvia2_invv_26.pex,20261207,1
+obranegvia2_invv_26.pex,20261225,2
+invv_26.pex,20261225,1
 obranegvia2_invd_26.pex,20261129,2
 becblackworksobranegvia2_invd_26.pex,20261129,1
 obranegvia2_invl_26.pex,20261223,2

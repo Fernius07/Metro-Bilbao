@@ -31,3 +31,5 @@ invd_26.pex,20261213,2
 obranegvia2_invd_26.pex,20261213,1
 obranegvia2_invv_26.pex,20261225,2
 navidadinvcorto_26.pex,20261225,1
+obranegvia2_invl_26.pex,20261228,2
+sempascnavinvl_26.pex,20261228,1
